@@ -4,27 +4,19 @@ import (
 	"fmt"
 )
 
-type Position struct {
-	X, Y, Z int `json:"x,y,z"`
-}
-
-func (p Position) String() string {
-	return fmt.Sprintf("(%d,%d,%d)", p.X, p.Y, p.Z)
-}
-
-func (p Position) Equals(other Position) bool {
-	return p.X == other.X && p.Y == other.Y && p.Z == other.Z
+type Position interface {
+	String() string
+	Equals(Position) bool
+	Hash() string
 }
 
 type Board interface {
-	GetWidth() int
-	GetHeight() int
 	IsValidPosition(pos Position) bool
 	GetNeighbors(pos Position) []Position
 	GetDistance(from, to Position) int
-	FindPath(from, to Position, movementCost func(Position) int) ([]Position, error)
 	GetTerrain(pos Position) (string, bool)
 	SetTerrain(pos Position, terrainType string) error
+	GetAllPositions() []Position
 }
 
 type PathfindingNode struct {
@@ -41,7 +33,6 @@ func (n *PathfindingNode) CalculateFCost() {
 
 type Pathfinder interface {
 	FindPath(board Board, from, to Position, movementCost func(Position) int) ([]Position, error)
-	GetNeighbors(board Board, pos Position) []Position
 	CalculateDistance(from, to Position) int
 }
 
@@ -109,8 +100,8 @@ func (bm *BoardManager) GetMovementRange(from Position, maxMovement int, movemen
 		cost int
 	}{{from, 0}}
 	
-	visited := make(map[Position]bool)
-	visited[from] = true
+	visited := make(map[string]bool)
+	visited[from.Hash()] = true
 	
 	for len(queue) > 0 {
 		current := queue[0]
@@ -118,13 +109,14 @@ func (bm *BoardManager) GetMovementRange(from Position, maxMovement int, movemen
 		
 		neighbors := bm.board.GetNeighbors(current.pos)
 		for _, neighbor := range neighbors {
-			if visited[neighbor] || !bm.board.IsValidPosition(neighbor) {
+			hash := neighbor.Hash()
+			if visited[hash] || !bm.board.IsValidPosition(neighbor) {
 				continue
 			}
 			
 			newCost := current.cost + movementCost(neighbor)
 			if newCost <= maxMovement {
-				visited[neighbor] = true
+				visited[hash] = true
 				reachable = append(reachable, neighbor)
 				queue = append(queue, struct {
 					pos  Position
@@ -157,12 +149,10 @@ func (los *BasicLineOfSight) CanSee(board Board, from, to Position, sightRange i
 func (los *BasicLineOfSight) GetVisiblePositions(board Board, from Position, sightRange int) []Position {
 	var visible []Position
 	
-	for x := from.X - sightRange; x <= from.X+sightRange; x++ {
-		for y := from.Y - sightRange; y <= from.Y+sightRange; y++ {
-			pos := Position{X: x, Y: y, Z: from.Z}
-			if board.IsValidPosition(pos) && los.CanSee(board, from, pos, sightRange) {
-				visible = append(visible, pos)
-			}
+	allPositions := board.GetAllPositions()
+	for _, pos := range allPositions {
+		if los.CanSee(board, from, pos, sightRange) {
+			visible = append(visible, pos)
 		}
 	}
 	
@@ -183,4 +173,101 @@ func (los *BasicLineOfSight) IsBlocked(board Board, pos Position) bool {
 	}
 	
 	return false
+}
+
+type AStarPathfinder struct{}
+
+func (pf *AStarPathfinder) FindPath(board Board, from, to Position, movementCost func(Position) int) ([]Position, error) {
+	if !board.IsValidPosition(from) || !board.IsValidPosition(to) {
+		return nil, fmt.Errorf("invalid start or end position")
+	}
+	
+	if from.Equals(to) {
+		return []Position{from}, nil
+	}
+	
+	openSet := []*PathfindingNode{}
+	closedSet := make(map[string]*PathfindingNode)
+	
+	startNode := &PathfindingNode{
+		Position: from,
+		GCost:    0,
+		HCost:    pf.CalculateDistance(from, to),
+	}
+	startNode.CalculateFCost()
+	
+	openSet = append(openSet, startNode)
+	
+	for len(openSet) > 0 {
+		currentNode := openSet[0]
+		currentIndex := 0
+		
+		for i, node := range openSet {
+			if node.FCost < currentNode.FCost || (node.FCost == currentNode.FCost && node.HCost < currentNode.HCost) {
+				currentNode = node
+				currentIndex = i
+			}
+		}
+		
+		openSet = append(openSet[:currentIndex], openSet[currentIndex+1:]...)
+		closedSet[currentNode.Position.Hash()] = currentNode
+		
+		if currentNode.Position.Equals(to) {
+			return pf.reconstructPath(currentNode), nil
+		}
+		
+		neighbors := board.GetNeighbors(currentNode.Position)
+		for _, neighbor := range neighbors {
+			if !board.IsValidPosition(neighbor) {
+				continue
+			}
+			
+			hash := neighbor.Hash()
+			if _, inClosed := closedSet[hash]; inClosed {
+				continue
+			}
+			
+			newGCost := currentNode.GCost + movementCost(neighbor)
+			
+			var neighborNode *PathfindingNode
+			inOpen := false
+			for _, node := range openSet {
+				if node.Position.Equals(neighbor) {
+					neighborNode = node
+					inOpen = true
+					break
+				}
+			}
+			
+			if !inOpen || newGCost < neighborNode.GCost {
+				if neighborNode == nil {
+					neighborNode = &PathfindingNode{Position: neighbor}
+					openSet = append(openSet, neighborNode)
+				}
+				
+				neighborNode.GCost = newGCost
+				neighborNode.HCost = pf.CalculateDistance(neighbor, to)
+				neighborNode.Parent = currentNode
+				neighborNode.CalculateFCost()
+			}
+		}
+	}
+	
+	return nil, fmt.Errorf("no path found")
+}
+
+func (pf *AStarPathfinder) CalculateDistance(from, to Position) int {
+	return 1
+}
+
+func (pf *AStarPathfinder) reconstructPath(node *PathfindingNode) []Position {
+	var path []Position
+	current := node
+	
+	for current != nil {
+		path = append([]Position{current.Position}, path...)
+		current = current.Parent
+	}
+	
+	return path
 }
