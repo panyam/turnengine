@@ -1,0 +1,168 @@
+// protos/turnengine/v1/map.proto
+
+syntax = "proto3";
+import "google/protobuf/field_mask.proto";
+
+option go_package = "github.com/panyam/turnengine/gen/go/turnengine/v1";
+package turnengine.v1;
+
+import "turnengine/v1/models.proto";
+import "google/api/annotations.proto";
+
+/**
+ * Service for managing maps
+ */
+service MapsService {
+  /**
+   * Create a new map.
+   */
+  rpc CreateMap(CreateMapRequest) returns (CreateMapResponse) {
+    option (google.api.http) = {
+      post: "/v1/maps",
+      body: "*",
+    };
+  }
+
+  /**
+   * List all maps from a user.
+   */
+  rpc ListMaps(ListMapsRequest) returns (ListMapsResponse) { 
+    option (google.api.http) = {
+      get: "/v1/maps"
+    };
+  }
+
+  /**
+   * Get details/stats for a particular map
+   */
+  rpc GetMap(GetMapRequest) returns (GetMapResponse) { 
+    option (google.api.http) = {
+      get: "/v1/maps/{id=*}/{version=*}"
+    };
+  }
+
+  /**
+   * Delete a particular map.  Frees up resources used by it and all the connections
+   */
+  rpc DeleteMap(DeleteMapRequest) returns (DeleteMapResponse) { 
+    option (google.api.http) = {
+      delete: "/v1/maps/{id=*}/{version=*}"
+    };
+  }
+
+  /**
+   * Updates a particular map.
+   */
+  rpc UpdateMap(UpdateMapRequest) returns (UpdateMapResponse) { 
+    option (google.api.http) = {
+      put: "/v1/maps/{id=*}/{version=*}"
+    };
+  }
+}
+
+/**
+ * Map creation request object
+ */
+message CreateMapRequest {
+  /**
+   * Map being updated
+   */
+  Map map = 1;
+}
+
+/**
+ * Response of an map creation.
+ */
+message CreateMapResponse {
+  /**
+   * Map being created
+   */
+  Map map = 1;
+
+  /**
+   * Error specific to a field if there are any errors.
+   */
+  map<string, string> field_errors = 2;
+}
+
+/**
+ * An map search request.  For now only paginations params are provided.
+ */
+message ListMapsRequest {
+  // Pagination info
+  Pagination pagination = 1;
+}
+
+/**
+ * Response of a map search/listing.
+ */
+message ListMapsResponse {
+  /**
+   * The list of maps found as part of this response.
+   */
+  repeated Map maps = 1;
+
+  PaginationResponse pagination = 2;
+}
+
+/**
+ * Request to get a map.
+ */
+message GetMapRequest {
+  /**
+   * ID of the map to be fetched
+   */
+  string id = 1;
+
+  /**
+   * Version of the map
+   * "latest" by default
+   */
+  string versoin = 2;
+}
+
+/**
+ * Map get response
+ */
+message GetMapResponse {
+  Map map = 1;
+}
+
+/**
+ * Request to delete an map.
+ */
+message DeleteMapRequest {
+  /**
+   * ID of the map to be deleted.
+   */
+  string id = 1;
+}
+
+/**
+ * Map deletion response
+ */
+message DeleteMapResponse {
+}
+
+/**
+ * Request to update a map.
+ */
+message UpdateMapRequest {
+  /**
+   * ID of the map to be fetched
+   */
+  string id = 1;
+
+  /**
+   * Version of the map
+   * "latest" by default
+   */
+  string versoin = 2;
+}
+
+/**
+ * update map response
+ */
+message UpdateMapResponse {
+  Map map = 1;
+}

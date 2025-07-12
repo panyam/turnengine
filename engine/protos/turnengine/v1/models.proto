@@ -1,0 +1,106 @@
+// protos/turnengine/v1/models.proto
+
+syntax = "proto3";
+import "google/protobuf/timestamp.proto";
+option go_package = "github.com/panyam/turnengine/gen/go/turnengine/v1";
+package turnengine.v1;
+
+message Pagination {
+  /**
+   * Instead of an offset an abstract  "page" key is provided that offers
+   * an opaque "pointer" into some offset in a result set.
+   */
+  string page_key = 1;
+
+  /**
+   * If a pagekey is not supported we can also support a direct integer offset
+   * for cases where it makes sense.
+   */
+  int32 page_offset = 2;
+
+  /**
+   * Number of results to return.
+   */
+  int32 page_size = 3;
+}
+
+message PaginationResponse {
+  /**
+   * The key/pointer string that subsequent List requests should pass to
+   * continue the pagination.
+   */
+  string next_page_key = 2;
+
+  /**
+   * Also support an integer offset if possible
+   */
+  int32 next_page_offset = 3;
+
+  /**
+   * Whether theere are more results.
+   */
+  bool has_more = 4;
+
+  /**
+   * Total number of results.
+   */
+  int32 total_results = 5;
+}
+
+message Map {
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp updated_at = 2;
+
+  // Unique ID for the canvas
+  string id = 3;
+
+  // Which version of the map is it
+  string version = 4;
+
+  // Active system being observed
+  string name = 5;
+}
+
+// Each created instance of a game
+message GameInstance {
+  google.protobuf.Timestamp created_at = 1;
+  google.protobuf.Timestamp updated_at = 2;
+
+  // ID of the game
+  string id = 3;
+
+  // Map being used
+  string map_id = 4;
+
+  // Version of the map being used
+  string map_version = 5;
+
+  // ID of the player who created it
+  string creator_id = 6;
+
+  // maximum number of players
+  int32 max_players = 7;
+
+  // Players in the game and their statuses
+  GamePlayer players = 8;
+
+  // Other fields
+}
+
+// A player in the game
+message GamePlayer {
+  // Game the player is participating in
+  string game_id = 1;
+
+  // Player participating
+  string player_id = 2;
+
+  google.protobuf.Timestamp invited_on = 3;
+  google.protobuf.Timestamp joined_on = 4;
+  google.protobuf.Timestamp last_active = 5;
+
+  string status = 6;
+
+  // Display name of the player if any
+  string display_name = 7;
+}
