@@ -9,8 +9,8 @@ require (
 	github.com/felixge/httpsnoop v1.0.4
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.1
 	github.com/joho/godotenv v1.5.1
-	github.com/panyam/goutils v0.1.5
-	github.com/panyam/oneauth v0.0.11
+	github.com/panyam/goutils v0.1.9
+	github.com/panyam/oneauth v0.0.12
 	github.com/panyam/templar v0.0.20
 	github.com/tdewolff/canvas v0.0.0-20250508181010-75987a1ae9cc
 	golang.org/x/image v0.29.0
@@ -42,6 +42,8 @@ require (
 	github.com/kolesa-team/go-webp v1.0.5 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/panyam/gocurrent v0.0.2 // indirect
+	github.com/panyam/servicekit v0.0.2 // indirect
 	github.com/srwiley/rasterx v0.0.0-20220730225603-2ab79fcdd4ef // indirect
 	github.com/srwiley/scanx v0.0.0-20190309010443-e94503791388 // indirect
 	github.com/tdewolff/font v0.0.0-20250430140153-b654fd8acba3 // indirect
