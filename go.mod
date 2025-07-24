@@ -7,6 +7,7 @@ require (
 	github.com/alexedwards/scs/v2 v2.9.0
 	github.com/fatih/color v1.18.0
 	github.com/felixge/httpsnoop v1.0.4
+	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.1
 	github.com/joho/godotenv v1.5.1
 	github.com/panyam/goutils v0.1.9
