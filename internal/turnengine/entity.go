@@ -7,8 +7,8 @@ import (
 )
 
 type Entity struct {
-	ID         string                 `json:"id"`
-	Components map[string]interface{} `json:"components"`
+	ID         string         `json:"id"`
+	Components map[string]any `json:"components"`
 }
 
 func generateID() string {
@@ -23,23 +23,23 @@ func NewEntity(id string) *Entity {
 	}
 	return &Entity{
 		ID:         id,
-		Components: make(map[string]interface{}),
+		Components: make(map[string]any),
 	}
 }
 
 func (e *Entity) AddComponent(comp Component) {
 	data, _ := json.Marshal(comp)
-	var compData map[string]interface{}
+	var compData map[string]any
 	json.Unmarshal(data, &compData)
 	e.Components[comp.Type()] = compData
 }
 
-func (e *Entity) GetComponent(compType string) (map[string]interface{}, bool) {
+func (e *Entity) GetComponent(compType string) (map[string]any, bool) {
 	comp, exists := e.Components[compType]
 	if !exists {
 		return nil, false
 	}
-	return comp.(map[string]interface{}), true
+	return comp.(map[string]any), true
 }
 
 func (e *Entity) HasComponent(compType string) bool {
