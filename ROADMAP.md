@@ -1,201 +1,204 @@
 # TurnEngine Implementation Roadmap
 
-## Phase 1: Core Engine Foundation (Weeks 1-3)
+## Phase 1: Core Game Implementation ✅ COMPLETE
 
-### Week 1: Basic Game State & ECS
-**Goals**: Get basic entity system working locally
+### Foundation (Completed)
+- ✅ Basic Entity Component System with hex grid
+- ✅ Turn-based game state management
+- ✅ WeeWar rules implementation
+- ✅ Movement and combat systems
+- ✅ WASM integration for browser play
+- ✅ File-based storage for games and worlds
 
-**Tasks**:
-- [ ] Set up project structure (monorepo with turnengine/ and games/weewar/)
-- [ ] Implement basic Entity Component System
-  - [ ] Component definitions (Position, Health, Movement, Combat)
-  - [ ] Entity creation and management
-  - [ ] System registration and execution
-- [ ] Create basic game state structure
-- [ ] Write tests for core ECS functionality
+### Key Achievements
+- Working single-player WeeWar game
+- World editor with save/load functionality
+- Transaction-safe state management
+- Comprehensive test coverage
 
-**Deliverable**: Can create entities with components and run basic systems
+## Phase 2: Multiplayer Coordination (90% Complete)
 
-### Week 2: Rule Engine & Commands  
-**Goals**: Game-specific behavior configuration
+### Distributed Validation Framework ✅
+**Status**: Core implementation complete
 
-**Tasks**:
-- [ ] Design rule configuration format (JSON schema)
-- [ ] Implement command pattern for all actions
-- [ ] Create command validation pipeline
-- [ ] Build WeeWar-specific rule set
-  - [ ] Unit types and stats
-  - [ ] Terrain types and effects
-  - [ ] Movement rules
-  - [ ] Combat calculation
-- [ ] Add turn management for sequential play
+**Completed**:
+- ✅ Game-agnostic coordination protocol in TurnEngine
+- ✅ Proposal/validation message definitions
+- ✅ K-of-N consensus mechanism
+- ✅ File-based coordination storage
+- ✅ Callback-based integration pattern
+- ✅ CoordinatorGamesService for WeeWar
 
-**Deliverable**: Can configure WeeWar rules and process movement commands
+**Architecture Decisions**:
+- Server never runs game logic - pure coordination
+- Pull-based synchronization (no websockets initially)
+- Game ID as session ID for simplicity
+- File storage with atomic operations
 
-### Week 3: Board System & Movement
-**Goals**: Spatial game mechanics working
+### Remaining Tasks (Week 1)
+- [ ] Unit tests for coordinator consensus
+- [ ] Manual test CLI for local multiplayer testing
+- [ ] WASM client updates to use coordinator
+- [ ] UI indicators for proposal status
 
-**Tasks**:
-- [ ] Implement hex grid system
-- [ ] Add pathfinding algorithm (A*)
-- [ ] Create movement validation
-- [ ] Implement fog of war calculations
-- [ ] Add basic combat resolution
-- [ ] Build victory condition checking
+## Phase 3: Production Readiness (Weeks 2-3)
 
-**Deliverable**: Playable WeeWar game logic (no UI)
-
-## Phase 2: Local Play & AI (Weeks 4-5)
-
-### Week 4: Local Storage & State Management
-**Goals**: Persistent local gameplay
+### Week 2: Database & Performance
+**Goals**: Production-grade storage and optimization
 
 **Tasks**:
-- [ ] Implement IndexedDB wrapper for game storage
-- [ ] Add save/load game functionality  
-- [ ] Create checkpoint system (every N turns)
-- [ ] Build replay system from command history
-- [ ] Add undo/redo functionality for local play
+- [ ] PostgreSQL storage implementation
+- [ ] Migration tool from file storage
+- [ ] Performance profiling and optimization
+- [ ] Load testing with concurrent games
+- [ ] Caching layer for frequently accessed data
 
-**Deliverable**: Can save and resume games locally
-
-### Week 5: Basic AI Implementation
-**Goals**: Single player mode against AI
+### Week 3: Enhanced Multiplayer Features
+**Goals**: Better multiplayer experience
 
 **Tasks**:
-- [ ] Design AI interface and personality system
-- [ ] Implement basic AI strategies:
-  - [ ] Random AI (for testing)
-  - [ ] Aggressive AI (rush tactics)  
-  - [ ] Defensive AI (economic focus)
-- [ ] Add AI difficulty scaling
-- [ ] Integrate AI with turn system
+- [ ] WebSocket support for real-time updates
+- [ ] Player presence/online status
+- [ ] Game replay from proposal history
+- [ ] Spectator mode with live updates
+- [ ] Tournament/lobby system
 
-**Deliverable**: Playable single-player WeeWar with AI opponents
+## Phase 4: Advanced Features (Weeks 4-5)
 
-## Phase 3: Minimal Server & Multiplayer (Weeks 6-7)
-
-### Week 6: Server Foundation
-**Goals**: Basic server for persistence
+### Week 4: Security & Anti-Cheat
+**Goals**: Robust validation and security
 
 **Tasks**:
-- [ ] Set up minimal server (Go + Gin)
-- [ ] Add user authentication (JWT)
-- [ ] Implement game persistence APIs
-- [ ] Create checkpoint storage system
-- [ ] Add basic game lobby functionality
+- [ ] Cryptographic signatures for proposals
+- [ ] Reputation system for validators
+- [ ] Cross-game validator pool
+- [ ] Anomaly detection for suspicious moves
+- [ ] Rate limiting and DDoS protection
 
-**Deliverable**: Server can store and retrieve games
-
-### Week 7: Multiplayer Sync
-**Goals**: Two players can play together
+### Week 5: AI Integration
+**Goals**: Single-player and assisted play
 
 **Tasks**:
-- [ ] Implement optimistic locking with version numbers
-- [ ] Add conflict resolution for simultaneous moves
-- [ ] Create player invitation system
-- [ ] Build turn notification system
-- [ ] Add spectator mode APIs
+- [ ] AI player implementation
+- [ ] Multiple AI personalities
+- [ ] AI as validator for single-player
+- [ ] Move suggestions for players
+- [ ] Training mode with AI coach
 
-**Deliverable**: Two players can play WeeWar together asynchronously
+## Phase 5: Platform Expansion (Weeks 6-8)
 
-## Phase 4: Polish & UI (Weeks 8-9)
-
-### Week 8: Basic Web UI
-**Goals**: Playable web interface
+### Week 6: Mobile Support
+**Goals**: Native mobile experience
 
 **Tasks**:
-- [ ] Create minimal web interface for WeeWar
-- [ ] Implement hex grid rendering (SVG or Canvas)
-- [ ] Add unit sprites and animations
-- [ ] Build game lobby interface
-- [ ] Add player authentication UI
+- [ ] Progressive Web App setup
+- [ ] Touch-optimized UI
+- [ ] Offline play with sync
+- [ ] Push notifications for turns
+- [ ] Mobile-specific performance optimization
 
-**Deliverable**: Fully playable WeeWar in browser
-
-### Week 9: Testing & Deployment
-**Goals**: Production-ready system
+### Week 7: Neptune's Pride Adaptation
+**Goals**: Prove engine flexibility
 
 **Tasks**:
-- [ ] Comprehensive testing (unit, integration, load)
-- [ ] Performance optimization
-- [ ] Deploy to cloud (Vercel/Railway for simplicity)
-- [ ] Add monitoring and logging
-- [ ] Write user documentation
+- [ ] Real-time game loop support
+- [ ] Graph-based map (vs hex grid)
+- [ ] Scheduled events system
+- [ ] Diplomacy and messaging
+- [ ] Technology research tree
 
-**Deliverable**: Live WeeWar game ready for beta testing
-
-## Phase 5: Neptune's Pride (Weeks 10-12)
-
-### Week 10: Engine Extensions
-**Goals**: Extend engine for real-time gameplay
+### Week 8: Platform Features
+**Goals**: Social and competitive features
 
 **Tasks**:
-- [ ] Add continuous time management system
-- [ ] Implement graph-based board (vs hex grid)
-- [ ] Create scheduled event system for fleet arrivals
-- [ ] Add real-time command processing
+- [ ] Player profiles and statistics
+- [ ] Achievements and progression
+- [ ] Ranked matchmaking
+- [ ] Clans/teams system
+- [ ] Seasonal competitions
 
-**Deliverable**: Engine supports both turn-based and real-time games
+## Technical Milestones
 
-### Week 11: Neptune's Pride Game Logic
-**Goals**: NP-specific features
+### Current Stack
+- **Backend**: Go with gRPC/Connect
+- **Frontend**: TypeScript + Phaser
+- **WASM**: Go compiled to WASM
+- **Storage**: File-based (PostgreSQL planned)
+- **Coordination**: TurnEngine generic framework
 
-**Tasks**:
-- [ ] Implement star and fleet entities
-- [ ] Add technology research system
-- [ ] Create diplomacy messaging system
-- [ ] Build economic modeling (production rates)
-- [ ] Add alliance/treaty mechanics
+### Performance Targets
+- [ ] Support 1000+ concurrent games
+- [ ] Sub-100ms move validation
+- [ ] 99.9% uptime SLA
+- [ ] < 5MB initial download
+- [ ] Offline-capable with sync
 
-**Deliverable**: Neptune's Pride game logic complete
+### Quality Metrics
+- [ ] 80%+ test coverage
+- [ ] Zero-downtime deployments
+- [ ] Automated performance regression tests
+- [ ] Security audit passed
+- [ ] Accessibility WCAG 2.1 AA compliant
 
-### Week 12: NP UI & Integration
-**Goals**: Second game fully working
+## Success Criteria
 
-**Tasks**:
-- [ ] Create space-themed UI for Neptune's Pride
-- [ ] Add galaxy map rendering
-- [ ] Implement diplomacy interface
-- [ ] Add technology tree visualization
-- [ ] Integration testing with existing infrastructure
+### Phase 2 (Multiplayer)
+- ✅ Multiple players can play together
+- ✅ Moves validated by peers, not server
+- ✅ Cheating attempts detected
+- [ ] 95%+ successful game completions
 
-**Deliverable**: Two complete games sharing same engine
+### Phase 3 (Production)
+- [ ] Handle 100+ concurrent games
+- [ ] < $50/month infrastructure costs
+- [ ] 99.9% uptime achieved
+- [ ] Average response time < 200ms
 
-## Technical Stack Decisions
+### Phase 4 (Advanced)
+- [ ] AI wins 30-70% against average players
+- [ ] Reputation system reduces cheating by 90%
+- [ ] Cross-game validation pool active
 
-### Frontend
-- **Framework**: Vanilla JS or lightweight framework (Lit, Alpine.js)
-- **Rendering**: SVG for board graphics (scales well, easy to manipulate)
-- **State**: Custom state management integrated with engine
-- **Storage**: IndexedDB via Dexie.js wrapper
+### Phase 5 (Platform)
+- [ ] Two different games on same engine
+- [ ] 1000+ monthly active users
+- [ ] Mobile users > 50% of player base
+- [ ] Platform profitable or break-even
 
-### Backend  
-- **Runtime**: Node.js with Express (simple, well-known)
-- **Database**: PostgreSQL with JSON columns for game state
-- **Authentication**: JWT tokens with refresh mechanism
-- **Deployment**: Railway or Vercel for ease
+## Lessons Learned
 
-### Development
-- **Language**: Go for all game logic, JavaScript for UI
-- **WASM**: TinyGo for smaller browser bundles
-- **Testing**: Go's built-in testing, Playwright for integration
-- **Build**: Make + Go toolchain
-- **Monorepo**: Go modules with shared core package
+### Architecture Wins
+- Separation of game logic from coordination
+- Transaction-safe state management
+- File storage simplicity for development
+- Callback pattern for service integration
 
-## Success Metrics
+### Technical Insights
+- WASM provides true write-once, run-anywhere
+- Protobuf ensures type safety across languages
+- Pull-based sync simpler than WebSockets initially
+- Game-agnostic design enables reusability
 
-### Phase 1-2 Success
-- [ ] Engine supports multiple game types via configuration
-- [ ] Local gameplay works offline with AI
-- [ ] Test suite covers core engine functionality
+### Process Improvements
+- Incremental delivery reduces risk
+- File storage accelerates development
+- Manual testing tools essential early
+- Clear separation of concerns critical
 
-### Phase 3-4 Success  
-- [ ] Server costs under $10/month for 100+ concurrent games
-- [ ] Players can complete full games without technical issues
-- [ ] Load testing shows engine scales to target limits
+## Next Major Decision Points
 
-### Phase 5 Success
-- [ ] Two completely different games share 80%+ of engine code
-- [ ] New game types can be added with minimal engine changes
-- [ ] Performance stays consistent across game types
+1. **Database Selection** (Week 2)
+   - PostgreSQL vs CockroachDB vs MongoDB
+   - Consider operational complexity
+
+2. **WebSocket Framework** (Week 3)
+   - Native Go vs existing framework
+   - Consider scaling implications
+
+3. **Mobile Strategy** (Week 6)
+   - PWA vs React Native vs Flutter
+   - Consider maintenance burden
+
+4. **Monetization Model** (Before launch)
+   - Free with ads vs Premium vs Freemium
+   - Consider player acquisition costs
