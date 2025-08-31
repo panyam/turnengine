@@ -35,10 +35,18 @@
 - Game ID as session ID for simplicity
 - File storage with atomic operations
 
+### Latest Progress (Current Session)
+- ✅ Added ExpectedResponse field to ProcessMovesRequest proto
+- ✅ Implemented serialize/deserialize helpers for protobuf messages
+- ✅ Updated ProcessMoves to handle client-computed validation
+- ✅ Clean separation: GameService handles game logic, CoordinatorService handles consensus
+
 ### Remaining Tasks (Week 1)
+- [ ] Wire coordinator client to FSGamesService
+- [ ] Update WASM client to compute and send ExpectedResponse
+- [ ] Create independent validator service
 - [ ] Unit tests for coordinator consensus
 - [ ] Manual test CLI for local multiplayer testing
-- [ ] WASM client updates to use coordinator
 - [ ] UI indicators for proposal status
 
 ## Phase 3: Production Readiness (Weeks 2-3)

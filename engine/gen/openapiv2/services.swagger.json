@@ -1,0 +1,259 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "turnengine/v1/coordinator.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "CoordinatorService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {},
+  "definitions": {
+    "googlerpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "v1GetPendingValidationsResponse": {
+      "type": "object",
+      "properties": {
+        "validations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1PendingValidation"
+          }
+        }
+      }
+    },
+    "v1GetProposalStatusResponse": {
+      "type": "object",
+      "properties": {
+        "proposal": {
+          "$ref": "#/definitions/v1ProposalInfo"
+        },
+        "phase": {
+          "$ref": "#/definitions/v1ProposalPhase"
+        },
+        "votesReceived": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "votesRequired": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1PendingValidation": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "type": "string"
+        },
+        "proposalId": {
+          "type": "string"
+        },
+        "proposerId": {
+          "type": "string"
+        },
+        "fromStateHash": {
+          "type": "string"
+        },
+        "movesBlob": {
+          "type": "string",
+          "format": "byte"
+        },
+        "changesBlob": {
+          "type": "string",
+          "format": "byte"
+        },
+        "deadline": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "nonce": {
+          "type": "string"
+        }
+      }
+    },
+    "v1ProposalInfo": {
+      "type": "object",
+      "properties": {
+        "proposalId": {
+          "type": "string"
+        },
+        "sessionId": {
+          "type": "string"
+        },
+        "proposerId": {
+          "type": "string"
+        },
+        "fromStateHash": {
+          "type": "string",
+          "title": "State transition (opaque to coordinator)"
+        },
+        "toStateHash": {
+          "type": "string"
+        },
+        "movesBlob": {
+          "type": "string",
+          "format": "byte",
+          "title": "Opaque game moves"
+        },
+        "changesBlob": {
+          "type": "string",
+          "format": "byte",
+          "title": "Opaque changes"
+        },
+        "newStateBlob": {
+          "type": "string",
+          "format": "byte",
+          "title": "Opaque new state"
+        },
+        "assignedValidators": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "Validation tracking"
+        },
+        "votes": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/v1ValidationVote"
+          }
+        },
+        "phase": {
+          "$ref": "#/definitions/v1ProposalPhase"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "title": "Timing"
+        },
+        "deadline": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "nonce": {
+          "type": "string",
+          "title": "Anti-replay"
+        }
+      }
+    },
+    "v1ProposalPhase": {
+      "type": "string",
+      "enum": [
+        "PROPOSAL_PHASE_UNSPECIFIED",
+        "PROPOSAL_PHASE_OPEN",
+        "PROPOSAL_PHASE_COLLECTING",
+        "PROPOSAL_PHASE_FINALIZING",
+        "PROPOSAL_PHASE_COMMITTED",
+        "PROPOSAL_PHASE_REJECTED",
+        "PROPOSAL_PHASE_TIMEOUT"
+      ],
+      "default": "PROPOSAL_PHASE_UNSPECIFIED",
+      "title": "- PROPOSAL_PHASE_OPEN: Ready for new proposals\n - PROPOSAL_PHASE_COLLECTING: Collecting validator votes\n - PROPOSAL_PHASE_FINALIZING: Consensus reached, updating\n - PROPOSAL_PHASE_COMMITTED: Successfully committed\n - PROPOSAL_PHASE_REJECTED: Failed validation\n - PROPOSAL_PHASE_TIMEOUT: Timed out"
+    },
+    "v1SubmitProposalResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "$ref": "#/definitions/v1SubmitProposalResponseStatus"
+        },
+        "proposalId": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string",
+          "title": "If rejected"
+        },
+        "assignedValidators": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "v1SubmitProposalResponseStatus": {
+      "type": "string",
+      "enum": [
+        "STATUS_UNSPECIFIED",
+        "STATUS_ACCEPTED",
+        "STATUS_REJECTED"
+      ],
+      "default": "STATUS_UNSPECIFIED"
+    },
+    "v1SubmitValidationResponse": {
+      "type": "object",
+      "properties": {
+        "recorded": {
+          "type": "boolean"
+        },
+        "consensusReached": {
+          "type": "boolean"
+        },
+        "consensusApproved": {
+          "type": "boolean"
+        }
+      }
+    },
+    "v1ValidationVote": {
+      "type": "object",
+      "properties": {
+        "validatorId": {
+          "type": "string"
+        },
+        "approved": {
+          "type": "boolean"
+        },
+        "computedHash": {
+          "type": "string"
+        },
+        "errorReason": {
+          "type": "string"
+        },
+        "submittedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "signature": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
