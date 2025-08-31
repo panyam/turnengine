@@ -1,6 +1,7 @@
 package coordination
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
@@ -65,7 +66,7 @@ func NewService(storage Storage, config Config, callbacks Callbacks) *Service {
 
 // SubmitProposal submits a new proposal for validation
 // This is completely game-agnostic - it just manages the consensus process
-func (s *Service) SubmitProposal(req *v1.SubmitProposalRequest) (*v1.SubmitProposalResponse, error) {
+func (s *Service) SubmitProposal(ctx context.Context, req *v1.SubmitProposalRequest) (*v1.SubmitProposalResponse, error) {
 	var proposalID string
 	var validators []string
 	var proposal *v1.ProposalInfo
@@ -151,10 +152,11 @@ func (s *Service) SubmitProposal(req *v1.SubmitProposalRequest) (*v1.SubmitPropo
 }
 
 // SubmitValidation records a validator's vote
-func (s *Service) SubmitValidation(req *v1.SubmitValidationRequest) (*v1.SubmitValidationResponse, error) {
+func (s *Service) SubmitValidation(ctx context.Context, req *v1.SubmitValidationRequest) (*v1.SubmitValidationResponse, error) {
 	var consensusReached bool
 	var consensusApproved bool
 	var proposal *v1.ProposalInfo
+	var rejections int
 	
 	err := s.storage.AtomicUpdate(req.SessionId, func(session *v1.GameSession) error {
 		// Check proposal exists and matches
@@ -193,7 +195,7 @@ func (s *Service) SubmitValidation(req *v1.SubmitValidationRequest) (*v1.SubmitV
 		
 		// Check for consensus
 		approvals := 0
-		rejections := 0
+		rejections = 0
 		
 		for _, vote := range proposal.Votes {
 			if vote.Approved && vote.ComputedHash == proposal.ToStateHash {
@@ -271,7 +273,7 @@ func (s *Service) SubmitValidation(req *v1.SubmitValidationRequest) (*v1.SubmitV
 }
 
 // GetProposalStatus returns the current status of a proposal
-func (s *Service) GetProposalStatus(req *v1.GetProposalStatusRequest) (*v1.GetProposalStatusResponse, error) {
+func (s *Service) GetProposalStatus(ctx context.Context, req *v1.GetProposalStatusRequest) (*v1.GetProposalStatusResponse, error) {
 	// Get the proposal
 	proposal, err := s.storage.GetProposal(req.ProposalId, req.ProposalId) // gameID not known here
 	if err != nil {
@@ -289,7 +291,7 @@ func (s *Service) GetProposalStatus(req *v1.GetProposalStatusRequest) (*v1.GetPr
 }
 
 // GetPendingValidations returns validations pending for a validator
-func (s *Service) GetPendingValidations(req *v1.GetPendingValidationsRequest) (*v1.GetPendingValidationsResponse, error) {
+func (s *Service) GetPendingValidations(ctx context.Context, req *v1.GetPendingValidationsRequest) (*v1.GetPendingValidationsResponse, error) {
 	// In a simple implementation, validators need to specify which games they're checking
 	// For now, return empty - validators will check specific games
 	return &v1.GetPendingValidationsResponse{
