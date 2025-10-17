@@ -12,7 +12,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/panyam/goutils v0.1.9
 	github.com/panyam/oneauth v0.0.12
-	github.com/panyam/protoc-gen-go-wasmjs v0.0.15
+	github.com/panyam/protoc-gen-go-wasmjs v0.0.16
 	github.com/panyam/templar v0.0.20
 	github.com/tdewolff/canvas v0.0.0-20250508181010-75987a1ae9cc
 	golang.org/x/image v0.29.0
@@ -60,3 +60,5 @@ require (
 	modernc.org/token v1.1.0 // indirect
 	star-tex.org/x/tex v0.7.1 // indirect
 )
+
+replace github.com/panyam/protoc-gen-go-wasmjs v0.0.16 => ../protoc-gen-go-wasmjs/
