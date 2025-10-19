@@ -10,10 +10,10 @@ require (
 	github.com/felixge/httpsnoop v1.0.4
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.1
 	github.com/joho/godotenv v1.5.1
-	github.com/panyam/goutils v0.1.9
+	github.com/panyam/goutils v0.1.10
 	github.com/panyam/oneauth v0.0.12
 	github.com/panyam/protoc-gen-go-wasmjs v0.0.16
-	github.com/panyam/templar v0.0.20
+	github.com/panyam/templar v0.0.21
 	github.com/tdewolff/canvas v0.0.0-20250508181010-75987a1ae9cc
 	golang.org/x/image v0.29.0
 	golang.org/x/net v0.41.0
@@ -62,3 +62,7 @@ require (
 )
 
 replace github.com/panyam/protoc-gen-go-wasmjs v0.0.16 => ../protoc-gen-go-wasmjs/
+
+replace github.com/panyam/templar v0.0.21 => ../templar
+
+replace github.com/panyam/goutils v0.1.10 => ../goutils
