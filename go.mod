@@ -34,6 +34,8 @@ require (
 	github.com/ByteArena/poly2tri-go v0.0.0-20170716161910-d102ad91854f // indirect
 	github.com/Kagami/go-avif v0.1.0 // indirect
 	github.com/andybalholm/brotli v1.1.1 // indirect
+	github.com/antchfx/htmlquery v1.3.4 // indirect
+	github.com/antchfx/xpath v1.3.3 // indirect
 	github.com/benoitkugler/textlayout v0.3.1 // indirect
 	github.com/benoitkugler/textprocessing v0.0.3 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
@@ -42,6 +44,7 @@ require (
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
 	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
+	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/kolesa-team/go-webp v1.0.5 // indirect
