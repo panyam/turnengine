@@ -8,19 +8,18 @@ require (
 	github.com/chzyer/readline v1.5.1
 	github.com/fatih/color v1.18.0
 	github.com/felixge/httpsnoop v1.0.4
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.1
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0
 	github.com/joho/godotenv v1.5.1
 	github.com/panyam/goutils v0.1.10
 	github.com/panyam/oneauth v0.0.12
-	github.com/panyam/protoc-gen-go-wasmjs v0.0.16
 	github.com/panyam/templar v0.0.21
 	github.com/tdewolff/canvas v0.0.0-20250508181010-75987a1ae9cc
 	golang.org/x/image v0.29.0
 	golang.org/x/net v0.41.0
 	golang.org/x/oauth2 v0.30.0
-	google.golang.org/genproto/googleapis/api v0.0.0-20250707201910-8d1bb00bc6a7
+	google.golang.org/genproto/googleapis/api v0.0.0-20251029180050-ab9386a59fda
 	google.golang.org/grpc v1.74.2
-	google.golang.org/protobuf v1.36.6
+	google.golang.org/protobuf v1.36.10
 )
 
 require (
@@ -51,8 +50,10 @@ require (
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/panyam/gocurrent v0.0.2 // indirect
+	github.com/panyam/protoc-gen-go-wasmjs v0.0.25 // indirect
 	github.com/panyam/servicekit v0.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
+	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10 // indirect
 	github.com/sagikazarmark/locafero v0.11.0 // indirect
 	github.com/sourcegraph/conc v0.3.1-0.20240121214520-5f936abd7ae8 // indirect
 	github.com/spf13/afero v1.15.0 // indirect
@@ -71,13 +72,13 @@ require (
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.28.0 // indirect
 	gonum.org/v1/plot v0.16.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20250715232539-7130f93afb79 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20251014184007-4626949a642f // indirect
 	modernc.org/knuth v0.5.5 // indirect
 	modernc.org/token v1.1.0 // indirect
 	star-tex.org/x/tex v0.7.1 // indirect
 )
 
-replace github.com/panyam/protoc-gen-go-wasmjs v0.0.16 => ../protoc-gen-go-wasmjs/
+// replace github.com/panyam/protoc-gen-go-wasmjs v0.0.25 => ../protoc-gen-go-wasmjs/
 
 replace github.com/panyam/templar v0.0.21 => ../templar
 
