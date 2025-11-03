@@ -4,8 +4,9 @@
 // @generated from file turnengine/v1/models/models.proto (package turnengine.v1, syntax proto3)
 /* eslint-disable */
 
-import type { GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
-import { fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { GenEnum, GenFile, GenMessage } from "@bufbuild/protobuf/codegenv2";
+import { enumDesc, fileDesc, messageDesc } from "@bufbuild/protobuf/codegenv2";
+import type { Timestamp } from "@bufbuild/protobuf/wkt";
 import { file_google_protobuf_timestamp } from "@bufbuild/protobuf/wkt";
 import type { Message } from "@bufbuild/protobuf";
 
@@ -13,7 +14,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file turnengine/v1/models/models.proto.
  */
 export const file_turnengine_v1_models_models: GenFile = /*@__PURE__*/
-  fileDesc("CiF0dXJuZW5naW5lL3YxL21vZGVscy9tb2RlbHMucHJvdG8SDXR1cm5lbmdpbmUudjEiRgoKUGFnaW5hdGlvbhIQCghwYWdlX2tleRgBIAEoCRITCgtwYWdlX29mZnNldBgCIAEoBRIRCglwYWdlX3NpemUYAyABKAUibgoSUGFnaW5hdGlvblJlc3BvbnNlEhUKDW5leHRfcGFnZV9rZXkYAiABKAkSGAoQbmV4dF9wYWdlX29mZnNldBgDIAEoBRIQCghoYXNfbW9yZRgEIAEoCBIVCg10b3RhbF9yZXN1bHRzGAUgASgFQrYBChFjb20udHVybmVuZ2luZS52MUILTW9kZWxzUHJvdG9QAVo/Z2l0aHViLmNvbS9wYW55YW0vdHVybmVuZ2luZS9lbmdpbmUvZ2VuL2dvL3R1cm5lbmdpbmUvdjEvbW9kZWxzogIDVFhYqgINVHVybmVuZ2luZS5WMcoCDVR1cm5lbmdpbmVcVjHiAhlUdXJuZW5naW5lXFYxXEdQQk1ldGFkYXRh6gIOVHVybmVuZ2luZTo6VjFiBnByb3RvMw", [file_google_protobuf_timestamp]);
+  fileDesc("CiF0dXJuZW5naW5lL3YxL21vZGVscy9tb2RlbHMucHJvdG8SDXR1cm5lbmdpbmUudjEiRgoKUGFnaW5hdGlvbhIQCghwYWdlX2tleRgBIAEoCRITCgtwYWdlX29mZnNldBgCIAEoBRIRCglwYWdlX3NpemUYAyABKAUibgoSUGFnaW5hdGlvblJlc3BvbnNlEhUKDW5leHRfcGFnZV9rZXkYAiABKAkSGAoQbmV4dF9wYWdlX29mZnNldBgDIAEoBRIQCghoYXNfbW9yZRgEIAEoCBIVCg10b3RhbF9yZXN1bHRzGAUgASgFIvkDCgxQcm9wb3NhbEluZm8SEwoLcHJvcG9zYWxfaWQYASABKAkSEgoKc2Vzc2lvbl9pZBgCIAEoCRITCgtwcm9wb3Nlcl9pZBgDIAEoCRIXCg9mcm9tX3N0YXRlX2hhc2gYBCABKAkSFQoNdG9fc3RhdGVfaGFzaBgFIAEoCRISCgptb3Zlc19ibG9iGAYgASgMEhQKDGNoYW5nZXNfYmxvYhgHIAEoDBIWCg5uZXdfc3RhdGVfYmxvYhgIIAEoDBIbChNhc3NpZ25lZF92YWxpZGF0b3JzGAkgAygJEjUKBXZvdGVzGAogAygLMiYudHVybmVuZ2luZS52MS5Qcm9wb3NhbEluZm8uVm90ZXNFbnRyeRIrCgVwaGFzZRgLIAEoDjIcLnR1cm5lbmdpbmUudjEuUHJvcG9zYWxQaGFzZRIuCgpjcmVhdGVkX2F0GAwgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIsCghkZWFkbGluZRgNIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASDQoFbm9uY2UYDiABKAkaSwoKVm90ZXNFbnRyeRILCgNrZXkYASABKAkSLAoFdmFsdWUYAiABKAsyHS50dXJuZW5naW5lLnYxLlZhbGlkYXRpb25Wb3RlOgI4ASKqAQoOVmFsaWRhdGlvblZvdGUSFAoMdmFsaWRhdG9yX2lkGAEgASgJEhAKCGFwcHJvdmVkGAIgASgIEhUKDWNvbXB1dGVkX2hhc2gYAyABKAkSFAoMZXJyb3JfcmVhc29uGAQgASgJEjAKDHN1Ym1pdHRlZF9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASEQoJc2lnbmF0dXJlGAYgASgJIs4BChRQcm9wb3NhbFRyYWNraW5nSW5mbxITCgtwcm9wb3NhbF9pZBgBIAEoCRITCgtwcm9wb3Nlcl9pZBgCIAEoCRIrCgVwaGFzZRgDIAEoDjIcLnR1cm5lbmdpbmUudjEuUHJvcG9zYWxQaGFzZRIuCgpjcmVhdGVkX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIXCg92YWxpZGF0b3JfY291bnQYBSABKAUSFgoOdm90ZXNfcmVjZWl2ZWQYBiABKAUiwQEKFVN1Ym1pdFByb3Bvc2FsUmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJEhMKC3Byb3Bvc2VyX2lkGAIgASgJEhcKD2Zyb21fc3RhdGVfaGFzaBgDIAEoCRIVCg10b19zdGF0ZV9oYXNoGAQgASgJEhIKCm1vdmVzX2Jsb2IYBSABKAwSFAoMY2hhbmdlc19ibG9iGAYgASgMEhYKDm5ld19zdGF0ZV9ibG9iGAcgASgMEg0KBW5vbmNlGAggASgJIuQBChZTdWJtaXRQcm9wb3NhbFJlc3BvbnNlEjwKBnN0YXR1cxgBIAEoDjIsLnR1cm5lbmdpbmUudjEuU3VibWl0UHJvcG9zYWxSZXNwb25zZS5TdGF0dXMSEwoLcHJvcG9zYWxfaWQYAiABKAkSDgoGcmVhc29uGAMgASgJEhsKE2Fzc2lnbmVkX3ZhbGlkYXRvcnMYBCADKAkiSgoGU3RhdHVzEhYKElNUQVRVU19VTlNQRUNJRklFRBAAEhMKD1NUQVRVU19BQ0NFUFRFRBABEhMKD1NUQVRVU19SRUpFQ1RFRBACIjQKHEdldFBlbmRpbmdWYWxpZGF0aW9uc1JlcXVlc3QSFAoMdmFsaWRhdG9yX2lkGAEgASgJIlYKHUdldFBlbmRpbmdWYWxpZGF0aW9uc1Jlc3BvbnNlEjUKC3ZhbGlkYXRpb25zGAEgAygLMiAudHVybmVuZ2luZS52MS5QZW5kaW5nVmFsaWRhdGlvbiLRAQoRUGVuZGluZ1ZhbGlkYXRpb24SEgoKc2Vzc2lvbl9pZBgBIAEoCRITCgtwcm9wb3NhbF9pZBgCIAEoCRITCgtwcm9wb3Nlcl9pZBgDIAEoCRIXCg9mcm9tX3N0YXRlX2hhc2gYBCABKAkSEgoKbW92ZXNfYmxvYhgFIAEoDBIUCgxjaGFuZ2VzX2Jsb2IYBiABKAwSLAoIZGVhZGxpbmUYByABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEg0KBW5vbmNlGAggASgJIqoBChdTdWJtaXRWYWxpZGF0aW9uUmVxdWVzdBISCgpzZXNzaW9uX2lkGAEgASgJEhMKC3Byb3Bvc2FsX2lkGAIgASgJEhQKDHZhbGlkYXRvcl9pZBgDIAEoCRIQCghhcHByb3ZlZBgEIAEoCBIVCg1jb21wdXRlZF9oYXNoGAUgASgJEhQKDGVycm9yX3JlYXNvbhgGIAEoCRIRCglzaWduYXR1cmUYByABKAkiYwoYU3VibWl0VmFsaWRhdGlvblJlc3BvbnNlEhAKCHJlY29yZGVkGAEgASgIEhkKEWNvbnNlbnN1c19yZWFjaGVkGAIgASgIEhoKEmNvbnNlbnN1c19hcHByb3ZlZBgDIAEoCCIvChhHZXRQcm9wb3NhbFN0YXR1c1JlcXVlc3QSEwoLcHJvcG9zYWxfaWQYASABKAkipwEKGUdldFByb3Bvc2FsU3RhdHVzUmVzcG9uc2USLQoIcHJvcG9zYWwYASABKAsyGy50dXJuZW5naW5lLnYxLlByb3Bvc2FsSW5mbxIrCgVwaGFzZRgCIAEoDjIcLnR1cm5lbmdpbmUudjEuUHJvcG9zYWxQaGFzZRIWCg52b3Rlc19yZWNlaXZlZBgDIAEoBRIWCg52b3Rlc19yZXF1aXJlZBgEIAEoBSLkAgoLR2FtZVNlc3Npb24SEgoKc2Vzc2lvbl9pZBgBIAEoCRIRCglnYW1lX3R5cGUYAiABKAkSEgoKcGxheWVyX2lkcxgDIAMoCRIZChFjdXJyZW50X3BsYXllcl9pZBgEIAEoCRIbChNyZXF1aXJlZF92YWxpZGF0b3JzGAUgASgFEhQKDGN1cnJlbnRfdGljaxgGIAEoAxIaChJjdXJyZW50X3N0YXRlX2hhc2gYByABKAkSGgoSY3VycmVudF9zdGF0ZV9ibG9iGAggASgMEjQKD2FjdGl2ZV9wcm9wb3NhbBgJIAEoCzIbLnR1cm5lbmdpbmUudjEuUHJvcG9zYWxJbmZvEi4KCmNyZWF0ZWRfYXQYCiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEi4KCnVwZGF0ZWRfYXQYCyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wKt0BCg1Qcm9wb3NhbFBoYXNlEh4KGlBST1BPU0FMX1BIQVNFX1VOU1BFQ0lGSUVEEAASFwoTUFJPUE9TQUxfUEhBU0VfT1BFThABEh0KGVBST1BPU0FMX1BIQVNFX0NPTExFQ1RJTkcQAhIdChlQUk9QT1NBTF9QSEFTRV9GSU5BTElaSU5HEAMSHAoYUFJPUE9TQUxfUEhBU0VfQ09NTUlUVEVEEAQSGwoXUFJPUE9TQUxfUEhBU0VfUkVKRUNURUQQBRIaChZQUk9QT1NBTF9QSEFTRV9USU1FT1VUEAZCtgEKEWNvbS50dXJuZW5naW5lLnYxQgtNb2RlbHNQcm90b1ABWj9naXRodWIuY29tL3BhbnlhbS90dXJuZW5naW5lL2VuZ2luZS9nZW4vZ28vdHVybmVuZ2luZS92MS9tb2RlbHOiAgNUWFiqAg1UdXJuZW5naW5lLlYxygINVHVybmVuZ2luZVxWMeICGVR1cm5lbmdpbmVcVjFcR1BCTWV0YWRhdGHqAg5UdXJuZW5naW5lOjpWMWIGcHJvdG8z", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message turnengine.v1.Pagination
@@ -97,4 +98,650 @@ export type PaginationResponse = Message<"turnengine.v1.PaginationResponse"> & {
  */
 export const PaginationResponseSchema: GenMessage<PaginationResponse> = /*@__PURE__*/
   messageDesc(file_turnengine_v1_models_models, 1);
+
+/**
+ * @generated from message turnengine.v1.ProposalInfo
+ */
+export type ProposalInfo = Message<"turnengine.v1.ProposalInfo"> & {
+  /**
+   * @generated from field: string proposal_id = 1;
+   */
+  proposalId: string;
+
+  /**
+   * @generated from field: string session_id = 2;
+   */
+  sessionId: string;
+
+  /**
+   * @generated from field: string proposer_id = 3;
+   */
+  proposerId: string;
+
+  /**
+   * State transition (opaque to coordinator)
+   *
+   * @generated from field: string from_state_hash = 4;
+   */
+  fromStateHash: string;
+
+  /**
+   * @generated from field: string to_state_hash = 5;
+   */
+  toStateHash: string;
+
+  /**
+   * Opaque game moves
+   *
+   * @generated from field: bytes moves_blob = 6;
+   */
+  movesBlob: Uint8Array;
+
+  /**
+   * Opaque changes
+   *
+   * @generated from field: bytes changes_blob = 7;
+   */
+  changesBlob: Uint8Array;
+
+  /**
+   * Opaque new state
+   *
+   * @generated from field: bytes new_state_blob = 8;
+   */
+  newStateBlob: Uint8Array;
+
+  /**
+   * Validation tracking
+   *
+   * @generated from field: repeated string assigned_validators = 9;
+   */
+  assignedValidators: string[];
+
+  /**
+   * @generated from field: map<string, turnengine.v1.ValidationVote> votes = 10;
+   */
+  votes: { [key: string]: ValidationVote };
+
+  /**
+   * @generated from field: turnengine.v1.ProposalPhase phase = 11;
+   */
+  phase: ProposalPhase;
+
+  /**
+   * Timing
+   *
+   * @generated from field: google.protobuf.Timestamp created_at = 12;
+   */
+  createdAt?: Timestamp;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp deadline = 13;
+   */
+  deadline?: Timestamp;
+
+  /**
+   * Anti-replay
+   *
+   * @generated from field: string nonce = 14;
+   */
+  nonce: string;
+};
+
+/**
+ * Describes the message turnengine.v1.ProposalInfo.
+ * Use `create(ProposalInfoSchema)` to create a new message.
+ */
+export const ProposalInfoSchema: GenMessage<ProposalInfo> = /*@__PURE__*/
+  messageDesc(file_turnengine_v1_models_models, 2);
+
+/**
+ * @generated from message turnengine.v1.ValidationVote
+ */
+export type ValidationVote = Message<"turnengine.v1.ValidationVote"> & {
+  /**
+   * @generated from field: string validator_id = 1;
+   */
+  validatorId: string;
+
+  /**
+   * @generated from field: bool approved = 2;
+   */
+  approved: boolean;
+
+  /**
+   * @generated from field: string computed_hash = 3;
+   */
+  computedHash: string;
+
+  /**
+   * @generated from field: string error_reason = 4;
+   */
+  errorReason: string;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp submitted_at = 5;
+   */
+  submittedAt?: Timestamp;
+
+  /**
+   * @generated from field: string signature = 6;
+   */
+  signature: string;
+};
+
+/**
+ * Describes the message turnengine.v1.ValidationVote.
+ * Use `create(ValidationVoteSchema)` to create a new message.
+ */
+export const ValidationVoteSchema: GenMessage<ValidationVote> = /*@__PURE__*/
+  messageDesc(file_turnengine_v1_models_models, 3);
+
+/**
+ * Lightweight proposal tracking for game state (game-agnostic)
+ *
+ * @generated from message turnengine.v1.ProposalTrackingInfo
+ */
+export type ProposalTrackingInfo = Message<"turnengine.v1.ProposalTrackingInfo"> & {
+  /**
+   * ID of the active proposal
+   *
+   * @generated from field: string proposal_id = 1;
+   */
+  proposalId: string;
+
+  /**
+   * Player who made the proposal
+   *
+   * @generated from field: string proposer_id = 2;
+   */
+  proposerId: string;
+
+  /**
+   * Current phase of the proposal
+   *
+   * @generated from field: turnengine.v1.ProposalPhase phase = 3;
+   */
+  phase: ProposalPhase;
+
+  /**
+   * Creation time
+   *
+   * @generated from field: google.protobuf.Timestamp created_at = 4;
+   */
+  createdAt?: Timestamp;
+
+  /**
+   * Number of validators assigned
+   *
+   * @generated from field: int32 validator_count = 5;
+   */
+  validatorCount: number;
+
+  /**
+   * Number of votes received
+   *
+   * @generated from field: int32 votes_received = 6;
+   */
+  votesReceived: number;
+};
+
+/**
+ * Describes the message turnengine.v1.ProposalTrackingInfo.
+ * Use `create(ProposalTrackingInfoSchema)` to create a new message.
+ */
+export const ProposalTrackingInfoSchema: GenMessage<ProposalTrackingInfo> = /*@__PURE__*/
+  messageDesc(file_turnengine_v1_models_models, 4);
+
+/**
+ * @generated from message turnengine.v1.SubmitProposalRequest
+ */
+export type SubmitProposalRequest = Message<"turnengine.v1.SubmitProposalRequest"> & {
+  /**
+   * @generated from field: string session_id = 1;
+   */
+  sessionId: string;
+
+  /**
+   * @generated from field: string proposer_id = 2;
+   */
+  proposerId: string;
+
+  /**
+   * @generated from field: string from_state_hash = 3;
+   */
+  fromStateHash: string;
+
+  /**
+   * @generated from field: string to_state_hash = 4;
+   */
+  toStateHash: string;
+
+  /**
+   * @generated from field: bytes moves_blob = 5;
+   */
+  movesBlob: Uint8Array;
+
+  /**
+   * @generated from field: bytes changes_blob = 6;
+   */
+  changesBlob: Uint8Array;
+
+  /**
+   * @generated from field: bytes new_state_blob = 7;
+   */
+  newStateBlob: Uint8Array;
+
+  /**
+   * @generated from field: string nonce = 8;
+   */
+  nonce: string;
+};
+
+/**
+ * Describes the message turnengine.v1.SubmitProposalRequest.
+ * Use `create(SubmitProposalRequestSchema)` to create a new message.
+ */
+export const SubmitProposalRequestSchema: GenMessage<SubmitProposalRequest> = /*@__PURE__*/
+  messageDesc(file_turnengine_v1_models_models, 5);
+
+/**
+ * @generated from message turnengine.v1.SubmitProposalResponse
+ */
+export type SubmitProposalResponse = Message<"turnengine.v1.SubmitProposalResponse"> & {
+  /**
+   * @generated from field: turnengine.v1.SubmitProposalResponse.Status status = 1;
+   */
+  status: SubmitProposalResponse_Status;
+
+  /**
+   * @generated from field: string proposal_id = 2;
+   */
+  proposalId: string;
+
+  /**
+   * If rejected
+   *
+   * @generated from field: string reason = 3;
+   */
+  reason: string;
+
+  /**
+   * @generated from field: repeated string assigned_validators = 4;
+   */
+  assignedValidators: string[];
+};
+
+/**
+ * Describes the message turnengine.v1.SubmitProposalResponse.
+ * Use `create(SubmitProposalResponseSchema)` to create a new message.
+ */
+export const SubmitProposalResponseSchema: GenMessage<SubmitProposalResponse> = /*@__PURE__*/
+  messageDesc(file_turnengine_v1_models_models, 6);
+
+/**
+ * @generated from enum turnengine.v1.SubmitProposalResponse.Status
+ */
+export enum SubmitProposalResponse_Status {
+  /**
+   * @generated from enum value: STATUS_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * @generated from enum value: STATUS_ACCEPTED = 1;
+   */
+  ACCEPTED = 1,
+
+  /**
+   * @generated from enum value: STATUS_REJECTED = 2;
+   */
+  REJECTED = 2,
+}
+
+/**
+ * Describes the enum turnengine.v1.SubmitProposalResponse.Status.
+ */
+export const SubmitProposalResponse_StatusSchema: GenEnum<SubmitProposalResponse_Status> = /*@__PURE__*/
+  enumDesc(file_turnengine_v1_models_models, 6, 0);
+
+/**
+ * @generated from message turnengine.v1.GetPendingValidationsRequest
+ */
+export type GetPendingValidationsRequest = Message<"turnengine.v1.GetPendingValidationsRequest"> & {
+  /**
+   * @generated from field: string validator_id = 1;
+   */
+  validatorId: string;
+};
+
+/**
+ * Describes the message turnengine.v1.GetPendingValidationsRequest.
+ * Use `create(GetPendingValidationsRequestSchema)` to create a new message.
+ */
+export const GetPendingValidationsRequestSchema: GenMessage<GetPendingValidationsRequest> = /*@__PURE__*/
+  messageDesc(file_turnengine_v1_models_models, 7);
+
+/**
+ * @generated from message turnengine.v1.GetPendingValidationsResponse
+ */
+export type GetPendingValidationsResponse = Message<"turnengine.v1.GetPendingValidationsResponse"> & {
+  /**
+   * @generated from field: repeated turnengine.v1.PendingValidation validations = 1;
+   */
+  validations: PendingValidation[];
+};
+
+/**
+ * Describes the message turnengine.v1.GetPendingValidationsResponse.
+ * Use `create(GetPendingValidationsResponseSchema)` to create a new message.
+ */
+export const GetPendingValidationsResponseSchema: GenMessage<GetPendingValidationsResponse> = /*@__PURE__*/
+  messageDesc(file_turnengine_v1_models_models, 8);
+
+/**
+ * @generated from message turnengine.v1.PendingValidation
+ */
+export type PendingValidation = Message<"turnengine.v1.PendingValidation"> & {
+  /**
+   * @generated from field: string session_id = 1;
+   */
+  sessionId: string;
+
+  /**
+   * @generated from field: string proposal_id = 2;
+   */
+  proposalId: string;
+
+  /**
+   * @generated from field: string proposer_id = 3;
+   */
+  proposerId: string;
+
+  /**
+   * @generated from field: string from_state_hash = 4;
+   */
+  fromStateHash: string;
+
+  /**
+   * @generated from field: bytes moves_blob = 5;
+   */
+  movesBlob: Uint8Array;
+
+  /**
+   * @generated from field: bytes changes_blob = 6;
+   */
+  changesBlob: Uint8Array;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp deadline = 7;
+   */
+  deadline?: Timestamp;
+
+  /**
+   * @generated from field: string nonce = 8;
+   */
+  nonce: string;
+};
+
+/**
+ * Describes the message turnengine.v1.PendingValidation.
+ * Use `create(PendingValidationSchema)` to create a new message.
+ */
+export const PendingValidationSchema: GenMessage<PendingValidation> = /*@__PURE__*/
+  messageDesc(file_turnengine_v1_models_models, 9);
+
+/**
+ * @generated from message turnengine.v1.SubmitValidationRequest
+ */
+export type SubmitValidationRequest = Message<"turnengine.v1.SubmitValidationRequest"> & {
+  /**
+   * @generated from field: string session_id = 1;
+   */
+  sessionId: string;
+
+  /**
+   * @generated from field: string proposal_id = 2;
+   */
+  proposalId: string;
+
+  /**
+   * @generated from field: string validator_id = 3;
+   */
+  validatorId: string;
+
+  /**
+   * @generated from field: bool approved = 4;
+   */
+  approved: boolean;
+
+  /**
+   * @generated from field: string computed_hash = 5;
+   */
+  computedHash: string;
+
+  /**
+   * @generated from field: string error_reason = 6;
+   */
+  errorReason: string;
+
+  /**
+   * @generated from field: string signature = 7;
+   */
+  signature: string;
+};
+
+/**
+ * Describes the message turnengine.v1.SubmitValidationRequest.
+ * Use `create(SubmitValidationRequestSchema)` to create a new message.
+ */
+export const SubmitValidationRequestSchema: GenMessage<SubmitValidationRequest> = /*@__PURE__*/
+  messageDesc(file_turnengine_v1_models_models, 10);
+
+/**
+ * @generated from message turnengine.v1.SubmitValidationResponse
+ */
+export type SubmitValidationResponse = Message<"turnengine.v1.SubmitValidationResponse"> & {
+  /**
+   * @generated from field: bool recorded = 1;
+   */
+  recorded: boolean;
+
+  /**
+   * @generated from field: bool consensus_reached = 2;
+   */
+  consensusReached: boolean;
+
+  /**
+   * @generated from field: bool consensus_approved = 3;
+   */
+  consensusApproved: boolean;
+};
+
+/**
+ * Describes the message turnengine.v1.SubmitValidationResponse.
+ * Use `create(SubmitValidationResponseSchema)` to create a new message.
+ */
+export const SubmitValidationResponseSchema: GenMessage<SubmitValidationResponse> = /*@__PURE__*/
+  messageDesc(file_turnengine_v1_models_models, 11);
+
+/**
+ * @generated from message turnengine.v1.GetProposalStatusRequest
+ */
+export type GetProposalStatusRequest = Message<"turnengine.v1.GetProposalStatusRequest"> & {
+  /**
+   * @generated from field: string proposal_id = 1;
+   */
+  proposalId: string;
+};
+
+/**
+ * Describes the message turnengine.v1.GetProposalStatusRequest.
+ * Use `create(GetProposalStatusRequestSchema)` to create a new message.
+ */
+export const GetProposalStatusRequestSchema: GenMessage<GetProposalStatusRequest> = /*@__PURE__*/
+  messageDesc(file_turnengine_v1_models_models, 12);
+
+/**
+ * @generated from message turnengine.v1.GetProposalStatusResponse
+ */
+export type GetProposalStatusResponse = Message<"turnengine.v1.GetProposalStatusResponse"> & {
+  /**
+   * @generated from field: turnengine.v1.ProposalInfo proposal = 1;
+   */
+  proposal?: ProposalInfo;
+
+  /**
+   * @generated from field: turnengine.v1.ProposalPhase phase = 2;
+   */
+  phase: ProposalPhase;
+
+  /**
+   * @generated from field: int32 votes_received = 3;
+   */
+  votesReceived: number;
+
+  /**
+   * @generated from field: int32 votes_required = 4;
+   */
+  votesRequired: number;
+};
+
+/**
+ * Describes the message turnengine.v1.GetProposalStatusResponse.
+ * Use `create(GetProposalStatusResponseSchema)` to create a new message.
+ */
+export const GetProposalStatusResponseSchema: GenMessage<GetProposalStatusResponse> = /*@__PURE__*/
+  messageDesc(file_turnengine_v1_models_models, 13);
+
+/**
+ * @generated from message turnengine.v1.GameSession
+ */
+export type GameSession = Message<"turnengine.v1.GameSession"> & {
+  /**
+   * @generated from field: string session_id = 1;
+   */
+  sessionId: string;
+
+  /**
+   * "weewar", "chess", etc - coordinator doesn't interpret
+   *
+   * @generated from field: string game_type = 2;
+   */
+  gameType: string;
+
+  /**
+   * @generated from field: repeated string player_ids = 3;
+   */
+  playerIds: string[];
+
+  /**
+   * @generated from field: string current_player_id = 4;
+   */
+  currentPlayerId: string;
+
+  /**
+   * @generated from field: int32 required_validators = 5;
+   */
+  requiredValidators: number;
+
+  /**
+   * Current state (opaque to coordinator)
+   *
+   * @generated from field: int64 current_tick = 6;
+   */
+  currentTick: bigint;
+
+  /**
+   * @generated from field: string current_state_hash = 7;
+   */
+  currentStateHash: string;
+
+  /**
+   * @generated from field: bytes current_state_blob = 8;
+   */
+  currentStateBlob: Uint8Array;
+
+  /**
+   * Active proposal if any
+   *
+   * @generated from field: turnengine.v1.ProposalInfo active_proposal = 9;
+   */
+  activeProposal?: ProposalInfo;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp created_at = 10;
+   */
+  createdAt?: Timestamp;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp updated_at = 11;
+   */
+  updatedAt?: Timestamp;
+};
+
+/**
+ * Describes the message turnengine.v1.GameSession.
+ * Use `create(GameSessionSchema)` to create a new message.
+ */
+export const GameSessionSchema: GenMessage<GameSession> = /*@__PURE__*/
+  messageDesc(file_turnengine_v1_models_models, 14);
+
+/**
+ * @generated from enum turnengine.v1.ProposalPhase
+ */
+export enum ProposalPhase {
+  /**
+   * @generated from enum value: PROPOSAL_PHASE_UNSPECIFIED = 0;
+   */
+  UNSPECIFIED = 0,
+
+  /**
+   * Ready for new proposals
+   *
+   * @generated from enum value: PROPOSAL_PHASE_OPEN = 1;
+   */
+  OPEN = 1,
+
+  /**
+   * Collecting validator votes
+   *
+   * @generated from enum value: PROPOSAL_PHASE_COLLECTING = 2;
+   */
+  COLLECTING = 2,
+
+  /**
+   * Consensus reached, updating
+   *
+   * @generated from enum value: PROPOSAL_PHASE_FINALIZING = 3;
+   */
+  FINALIZING = 3,
+
+  /**
+   * Successfully committed
+   *
+   * @generated from enum value: PROPOSAL_PHASE_COMMITTED = 4;
+   */
+  COMMITTED = 4,
+
+  /**
+   * Failed validation
+   *
+   * @generated from enum value: PROPOSAL_PHASE_REJECTED = 5;
+   */
+  REJECTED = 5,
+
+  /**
+   * Timed out
+   *
+   * @generated from enum value: PROPOSAL_PHASE_TIMEOUT = 6;
+   */
+  TIMEOUT = 6,
+}
+
+/**
+ * Describes the enum turnengine.v1.ProposalPhase.
+ */
+export const ProposalPhaseSchema: GenEnum<ProposalPhase> = /*@__PURE__*/
+  enumDesc(file_turnengine_v1_models_models, 0);
 

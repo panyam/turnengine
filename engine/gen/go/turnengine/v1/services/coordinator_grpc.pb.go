@@ -8,6 +8,7 @@ package services
 
 import (
 	context "context"
+	models "github.com/panyam/turnengine/engine/gen/go/turnengine/v1/models"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -33,13 +34,13 @@ const (
 // This service knows nothing about specific game mechanics
 type CoordinatorServiceClient interface {
 	// Submit a proposal for validation
-	SubmitProposal(ctx context.Context, in *SubmitProposalRequest, opts ...grpc.CallOption) (*SubmitProposalResponse, error)
+	SubmitProposal(ctx context.Context, in *models.SubmitProposalRequest, opts ...grpc.CallOption) (*models.SubmitProposalResponse, error)
 	// Get pending validations for a validator
-	GetPendingValidations(ctx context.Context, in *GetPendingValidationsRequest, opts ...grpc.CallOption) (*GetPendingValidationsResponse, error)
+	GetPendingValidations(ctx context.Context, in *models.GetPendingValidationsRequest, opts ...grpc.CallOption) (*models.GetPendingValidationsResponse, error)
 	// Submit validation result
-	SubmitValidation(ctx context.Context, in *SubmitValidationRequest, opts ...grpc.CallOption) (*SubmitValidationResponse, error)
+	SubmitValidation(ctx context.Context, in *models.SubmitValidationRequest, opts ...grpc.CallOption) (*models.SubmitValidationResponse, error)
 	// Get proposal status
-	GetProposalStatus(ctx context.Context, in *GetProposalStatusRequest, opts ...grpc.CallOption) (*GetProposalStatusResponse, error)
+	GetProposalStatus(ctx context.Context, in *models.GetProposalStatusRequest, opts ...grpc.CallOption) (*models.GetProposalStatusResponse, error)
 }
 
 type coordinatorServiceClient struct {
@@ -50,9 +51,9 @@ func NewCoordinatorServiceClient(cc grpc.ClientConnInterface) CoordinatorService
 	return &coordinatorServiceClient{cc}
 }
 
-func (c *coordinatorServiceClient) SubmitProposal(ctx context.Context, in *SubmitProposalRequest, opts ...grpc.CallOption) (*SubmitProposalResponse, error) {
+func (c *coordinatorServiceClient) SubmitProposal(ctx context.Context, in *models.SubmitProposalRequest, opts ...grpc.CallOption) (*models.SubmitProposalResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SubmitProposalResponse)
+	out := new(models.SubmitProposalResponse)
 	err := c.cc.Invoke(ctx, CoordinatorService_SubmitProposal_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -60,9 +61,9 @@ func (c *coordinatorServiceClient) SubmitProposal(ctx context.Context, in *Submi
 	return out, nil
 }
 
-func (c *coordinatorServiceClient) GetPendingValidations(ctx context.Context, in *GetPendingValidationsRequest, opts ...grpc.CallOption) (*GetPendingValidationsResponse, error) {
+func (c *coordinatorServiceClient) GetPendingValidations(ctx context.Context, in *models.GetPendingValidationsRequest, opts ...grpc.CallOption) (*models.GetPendingValidationsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetPendingValidationsResponse)
+	out := new(models.GetPendingValidationsResponse)
 	err := c.cc.Invoke(ctx, CoordinatorService_GetPendingValidations_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -70,9 +71,9 @@ func (c *coordinatorServiceClient) GetPendingValidations(ctx context.Context, in
 	return out, nil
 }
 
-func (c *coordinatorServiceClient) SubmitValidation(ctx context.Context, in *SubmitValidationRequest, opts ...grpc.CallOption) (*SubmitValidationResponse, error) {
+func (c *coordinatorServiceClient) SubmitValidation(ctx context.Context, in *models.SubmitValidationRequest, opts ...grpc.CallOption) (*models.SubmitValidationResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(SubmitValidationResponse)
+	out := new(models.SubmitValidationResponse)
 	err := c.cc.Invoke(ctx, CoordinatorService_SubmitValidation_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -80,9 +81,9 @@ func (c *coordinatorServiceClient) SubmitValidation(ctx context.Context, in *Sub
 	return out, nil
 }
 
-func (c *coordinatorServiceClient) GetProposalStatus(ctx context.Context, in *GetProposalStatusRequest, opts ...grpc.CallOption) (*GetProposalStatusResponse, error) {
+func (c *coordinatorServiceClient) GetProposalStatus(ctx context.Context, in *models.GetProposalStatusRequest, opts ...grpc.CallOption) (*models.GetProposalStatusResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(GetProposalStatusResponse)
+	out := new(models.GetProposalStatusResponse)
 	err := c.cc.Invoke(ctx, CoordinatorService_GetProposalStatus_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -98,13 +99,13 @@ func (c *coordinatorServiceClient) GetProposalStatus(ctx context.Context, in *Ge
 // This service knows nothing about specific game mechanics
 type CoordinatorServiceServer interface {
 	// Submit a proposal for validation
-	SubmitProposal(context.Context, *SubmitProposalRequest) (*SubmitProposalResponse, error)
+	SubmitProposal(context.Context, *models.SubmitProposalRequest) (*models.SubmitProposalResponse, error)
 	// Get pending validations for a validator
-	GetPendingValidations(context.Context, *GetPendingValidationsRequest) (*GetPendingValidationsResponse, error)
+	GetPendingValidations(context.Context, *models.GetPendingValidationsRequest) (*models.GetPendingValidationsResponse, error)
 	// Submit validation result
-	SubmitValidation(context.Context, *SubmitValidationRequest) (*SubmitValidationResponse, error)
+	SubmitValidation(context.Context, *models.SubmitValidationRequest) (*models.SubmitValidationResponse, error)
 	// Get proposal status
-	GetProposalStatus(context.Context, *GetProposalStatusRequest) (*GetProposalStatusResponse, error)
+	GetProposalStatus(context.Context, *models.GetProposalStatusRequest) (*models.GetProposalStatusResponse, error)
 }
 
 // UnimplementedCoordinatorServiceServer should be embedded to have
@@ -114,16 +115,16 @@ type CoordinatorServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedCoordinatorServiceServer struct{}
 
-func (UnimplementedCoordinatorServiceServer) SubmitProposal(context.Context, *SubmitProposalRequest) (*SubmitProposalResponse, error) {
+func (UnimplementedCoordinatorServiceServer) SubmitProposal(context.Context, *models.SubmitProposalRequest) (*models.SubmitProposalResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitProposal not implemented")
 }
-func (UnimplementedCoordinatorServiceServer) GetPendingValidations(context.Context, *GetPendingValidationsRequest) (*GetPendingValidationsResponse, error) {
+func (UnimplementedCoordinatorServiceServer) GetPendingValidations(context.Context, *models.GetPendingValidationsRequest) (*models.GetPendingValidationsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPendingValidations not implemented")
 }
-func (UnimplementedCoordinatorServiceServer) SubmitValidation(context.Context, *SubmitValidationRequest) (*SubmitValidationResponse, error) {
+func (UnimplementedCoordinatorServiceServer) SubmitValidation(context.Context, *models.SubmitValidationRequest) (*models.SubmitValidationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubmitValidation not implemented")
 }
-func (UnimplementedCoordinatorServiceServer) GetProposalStatus(context.Context, *GetProposalStatusRequest) (*GetProposalStatusResponse, error) {
+func (UnimplementedCoordinatorServiceServer) GetProposalStatus(context.Context, *models.GetProposalStatusRequest) (*models.GetProposalStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetProposalStatus not implemented")
 }
 func (UnimplementedCoordinatorServiceServer) testEmbeddedByValue() {}
@@ -147,7 +148,7 @@ func RegisterCoordinatorServiceServer(s grpc.ServiceRegistrar, srv CoordinatorSe
 }
 
 func _CoordinatorService_SubmitProposal_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SubmitProposalRequest)
+	in := new(models.SubmitProposalRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -159,13 +160,13 @@ func _CoordinatorService_SubmitProposal_Handler(srv interface{}, ctx context.Con
 		FullMethod: CoordinatorService_SubmitProposal_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CoordinatorServiceServer).SubmitProposal(ctx, req.(*SubmitProposalRequest))
+		return srv.(CoordinatorServiceServer).SubmitProposal(ctx, req.(*models.SubmitProposalRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CoordinatorService_GetPendingValidations_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetPendingValidationsRequest)
+	in := new(models.GetPendingValidationsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -177,13 +178,13 @@ func _CoordinatorService_GetPendingValidations_Handler(srv interface{}, ctx cont
 		FullMethod: CoordinatorService_GetPendingValidations_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CoordinatorServiceServer).GetPendingValidations(ctx, req.(*GetPendingValidationsRequest))
+		return srv.(CoordinatorServiceServer).GetPendingValidations(ctx, req.(*models.GetPendingValidationsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CoordinatorService_SubmitValidation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(SubmitValidationRequest)
+	in := new(models.SubmitValidationRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -195,13 +196,13 @@ func _CoordinatorService_SubmitValidation_Handler(srv interface{}, ctx context.C
 		FullMethod: CoordinatorService_SubmitValidation_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CoordinatorServiceServer).SubmitValidation(ctx, req.(*SubmitValidationRequest))
+		return srv.(CoordinatorServiceServer).SubmitValidation(ctx, req.(*models.SubmitValidationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
 func _CoordinatorService_GetProposalStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetProposalStatusRequest)
+	in := new(models.GetProposalStatusRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -213,7 +214,7 @@ func _CoordinatorService_GetProposalStatus_Handler(srv interface{}, ctx context.
 		FullMethod: CoordinatorService_GetProposalStatus_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(CoordinatorServiceServer).GetProposalStatus(ctx, req.(*GetProposalStatusRequest))
+		return srv.(CoordinatorServiceServer).GetProposalStatus(ctx, req.(*models.GetProposalStatusRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

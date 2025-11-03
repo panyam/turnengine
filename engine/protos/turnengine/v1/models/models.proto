@@ -49,3 +49,160 @@ message PaginationResponse {
   int32 total_results = 5;
 }
 
+message ProposalInfo {
+  string proposal_id = 1;
+  string session_id = 2;
+  string proposer_id = 3;
+  
+  // State transition (opaque to coordinator)
+  string from_state_hash = 4;
+  string to_state_hash = 5;
+  bytes moves_blob = 6;        // Opaque game moves
+  bytes changes_blob = 7;      // Opaque changes
+  bytes new_state_blob = 8;    // Opaque new state
+  
+  // Validation tracking
+  repeated string assigned_validators = 9;
+  map<string, ValidationVote> votes = 10;
+  ProposalPhase phase = 11;
+  
+  // Timing
+  google.protobuf.Timestamp created_at = 12;
+  google.protobuf.Timestamp deadline = 13;
+  
+  // Anti-replay
+  string nonce = 14;
+}
+
+message ValidationVote {
+  string validator_id = 1;
+  bool approved = 2;
+  string computed_hash = 3;
+  string error_reason = 4;
+  google.protobuf.Timestamp submitted_at = 5;
+  string signature = 6;
+}
+
+enum ProposalPhase {
+  PROPOSAL_PHASE_UNSPECIFIED = 0;
+  PROPOSAL_PHASE_OPEN = 1;          // Ready for new proposals
+  PROPOSAL_PHASE_COLLECTING = 2;    // Collecting validator votes
+  PROPOSAL_PHASE_FINALIZING = 3;    // Consensus reached, updating
+  PROPOSAL_PHASE_COMMITTED = 4;     // Successfully committed
+  PROPOSAL_PHASE_REJECTED = 5;      // Failed validation
+  PROPOSAL_PHASE_TIMEOUT = 6;       // Timed out
+}
+
+// Lightweight proposal tracking for game state (game-agnostic)
+message ProposalTrackingInfo {
+  // ID of the active proposal
+  string proposal_id = 1;
+  
+  // Player who made the proposal
+  string proposer_id = 2;
+  
+  // Current phase of the proposal
+  ProposalPhase phase = 3;
+  
+  // Creation time
+  google.protobuf.Timestamp created_at = 4;
+  
+  // Number of validators assigned
+  int32 validator_count = 5;
+  
+  // Number of votes received
+  int32 votes_received = 6;
+}
+
+// Request/Response messages
+
+message SubmitProposalRequest {
+  string session_id = 1;
+  string proposer_id = 2;
+  string from_state_hash = 3;
+  string to_state_hash = 4;
+  bytes moves_blob = 5;
+  bytes changes_blob = 6;
+  bytes new_state_blob = 7;
+  string nonce = 8;
+}
+
+message SubmitProposalResponse {
+  enum Status {
+    STATUS_UNSPECIFIED = 0;
+    STATUS_ACCEPTED = 1;
+    STATUS_REJECTED = 2;
+  }
+  
+  Status status = 1;
+  string proposal_id = 2;
+  string reason = 3;  // If rejected
+  repeated string assigned_validators = 4;
+}
+
+message GetPendingValidationsRequest {
+  string validator_id = 1;
+}
+
+message GetPendingValidationsResponse {
+  repeated PendingValidation validations = 1;
+}
+
+message PendingValidation {
+  string session_id = 1;
+  string proposal_id = 2;
+  string proposer_id = 3;
+  string from_state_hash = 4;
+  bytes moves_blob = 5;
+  bytes changes_blob = 6;
+  google.protobuf.Timestamp deadline = 7;
+  string nonce = 8;
+}
+
+message SubmitValidationRequest {
+  string session_id = 1;
+  string proposal_id = 2;
+  string validator_id = 3;
+  bool approved = 4;
+  string computed_hash = 5;
+  string error_reason = 6;
+  string signature = 7;
+}
+
+message SubmitValidationResponse {
+  bool recorded = 1;
+  bool consensus_reached = 2;
+  bool consensus_approved = 3;
+}
+
+message GetProposalStatusRequest {
+  string proposal_id = 1;
+}
+
+message GetProposalStatusResponse {
+  ProposalInfo proposal = 1;
+  ProposalPhase phase = 2;
+  int32 votes_received = 3;
+  int32 votes_required = 4;
+}
+
+// Storage interface messages (for coordinator's internal use)
+
+message GameSession {
+  string session_id = 1;
+  string game_type = 2;  // "weewar", "chess", etc - coordinator doesn't interpret
+  repeated string player_ids = 3;
+  string current_player_id = 4;
+  int32 required_validators = 5;
+  
+  // Current state (opaque to coordinator)
+  int64 current_tick = 6;
+  string current_state_hash = 7;
+  bytes current_state_blob = 8;
+  
+  // Active proposal if any
+  ProposalInfo active_proposal = 9;
+  
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+}

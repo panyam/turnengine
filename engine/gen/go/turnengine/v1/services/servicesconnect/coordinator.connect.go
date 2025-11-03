@@ -8,6 +8,7 @@ import (
 	connect "connectrpc.com/connect"
 	context "context"
 	errors "errors"
+	models "github.com/panyam/turnengine/engine/gen/go/turnengine/v1/models"
 	services "github.com/panyam/turnengine/engine/gen/go/turnengine/v1/services"
 	http "net/http"
 	strings "strings"
@@ -50,13 +51,13 @@ const (
 // CoordinatorServiceClient is a client for the turnengine.v1.CoordinatorService service.
 type CoordinatorServiceClient interface {
 	// Submit a proposal for validation
-	SubmitProposal(context.Context, *connect.Request[services.SubmitProposalRequest]) (*connect.Response[services.SubmitProposalResponse], error)
+	SubmitProposal(context.Context, *connect.Request[models.SubmitProposalRequest]) (*connect.Response[models.SubmitProposalResponse], error)
 	// Get pending validations for a validator
-	GetPendingValidations(context.Context, *connect.Request[services.GetPendingValidationsRequest]) (*connect.Response[services.GetPendingValidationsResponse], error)
+	GetPendingValidations(context.Context, *connect.Request[models.GetPendingValidationsRequest]) (*connect.Response[models.GetPendingValidationsResponse], error)
 	// Submit validation result
-	SubmitValidation(context.Context, *connect.Request[services.SubmitValidationRequest]) (*connect.Response[services.SubmitValidationResponse], error)
+	SubmitValidation(context.Context, *connect.Request[models.SubmitValidationRequest]) (*connect.Response[models.SubmitValidationResponse], error)
 	// Get proposal status
-	GetProposalStatus(context.Context, *connect.Request[services.GetProposalStatusRequest]) (*connect.Response[services.GetProposalStatusResponse], error)
+	GetProposalStatus(context.Context, *connect.Request[models.GetProposalStatusRequest]) (*connect.Response[models.GetProposalStatusResponse], error)
 }
 
 // NewCoordinatorServiceClient constructs a client for the turnengine.v1.CoordinatorService service.
@@ -70,25 +71,25 @@ func NewCoordinatorServiceClient(httpClient connect.HTTPClient, baseURL string, 
 	baseURL = strings.TrimRight(baseURL, "/")
 	coordinatorServiceMethods := services.File_turnengine_v1_services_coordinator_proto.Services().ByName("CoordinatorService").Methods()
 	return &coordinatorServiceClient{
-		submitProposal: connect.NewClient[services.SubmitProposalRequest, services.SubmitProposalResponse](
+		submitProposal: connect.NewClient[models.SubmitProposalRequest, models.SubmitProposalResponse](
 			httpClient,
 			baseURL+CoordinatorServiceSubmitProposalProcedure,
 			connect.WithSchema(coordinatorServiceMethods.ByName("SubmitProposal")),
 			connect.WithClientOptions(opts...),
 		),
-		getPendingValidations: connect.NewClient[services.GetPendingValidationsRequest, services.GetPendingValidationsResponse](
+		getPendingValidations: connect.NewClient[models.GetPendingValidationsRequest, models.GetPendingValidationsResponse](
 			httpClient,
 			baseURL+CoordinatorServiceGetPendingValidationsProcedure,
 			connect.WithSchema(coordinatorServiceMethods.ByName("GetPendingValidations")),
 			connect.WithClientOptions(opts...),
 		),
-		submitValidation: connect.NewClient[services.SubmitValidationRequest, services.SubmitValidationResponse](
+		submitValidation: connect.NewClient[models.SubmitValidationRequest, models.SubmitValidationResponse](
 			httpClient,
 			baseURL+CoordinatorServiceSubmitValidationProcedure,
 			connect.WithSchema(coordinatorServiceMethods.ByName("SubmitValidation")),
 			connect.WithClientOptions(opts...),
 		),
-		getProposalStatus: connect.NewClient[services.GetProposalStatusRequest, services.GetProposalStatusResponse](
+		getProposalStatus: connect.NewClient[models.GetProposalStatusRequest, models.GetProposalStatusResponse](
 			httpClient,
 			baseURL+CoordinatorServiceGetProposalStatusProcedure,
 			connect.WithSchema(coordinatorServiceMethods.ByName("GetProposalStatus")),
@@ -99,42 +100,42 @@ func NewCoordinatorServiceClient(httpClient connect.HTTPClient, baseURL string, 
 
 // coordinatorServiceClient implements CoordinatorServiceClient.
 type coordinatorServiceClient struct {
-	submitProposal        *connect.Client[services.SubmitProposalRequest, services.SubmitProposalResponse]
-	getPendingValidations *connect.Client[services.GetPendingValidationsRequest, services.GetPendingValidationsResponse]
-	submitValidation      *connect.Client[services.SubmitValidationRequest, services.SubmitValidationResponse]
-	getProposalStatus     *connect.Client[services.GetProposalStatusRequest, services.GetProposalStatusResponse]
+	submitProposal        *connect.Client[models.SubmitProposalRequest, models.SubmitProposalResponse]
+	getPendingValidations *connect.Client[models.GetPendingValidationsRequest, models.GetPendingValidationsResponse]
+	submitValidation      *connect.Client[models.SubmitValidationRequest, models.SubmitValidationResponse]
+	getProposalStatus     *connect.Client[models.GetProposalStatusRequest, models.GetProposalStatusResponse]
 }
 
 // SubmitProposal calls turnengine.v1.CoordinatorService.SubmitProposal.
-func (c *coordinatorServiceClient) SubmitProposal(ctx context.Context, req *connect.Request[services.SubmitProposalRequest]) (*connect.Response[services.SubmitProposalResponse], error) {
+func (c *coordinatorServiceClient) SubmitProposal(ctx context.Context, req *connect.Request[models.SubmitProposalRequest]) (*connect.Response[models.SubmitProposalResponse], error) {
 	return c.submitProposal.CallUnary(ctx, req)
 }
 
 // GetPendingValidations calls turnengine.v1.CoordinatorService.GetPendingValidations.
-func (c *coordinatorServiceClient) GetPendingValidations(ctx context.Context, req *connect.Request[services.GetPendingValidationsRequest]) (*connect.Response[services.GetPendingValidationsResponse], error) {
+func (c *coordinatorServiceClient) GetPendingValidations(ctx context.Context, req *connect.Request[models.GetPendingValidationsRequest]) (*connect.Response[models.GetPendingValidationsResponse], error) {
 	return c.getPendingValidations.CallUnary(ctx, req)
 }
 
 // SubmitValidation calls turnengine.v1.CoordinatorService.SubmitValidation.
-func (c *coordinatorServiceClient) SubmitValidation(ctx context.Context, req *connect.Request[services.SubmitValidationRequest]) (*connect.Response[services.SubmitValidationResponse], error) {
+func (c *coordinatorServiceClient) SubmitValidation(ctx context.Context, req *connect.Request[models.SubmitValidationRequest]) (*connect.Response[models.SubmitValidationResponse], error) {
 	return c.submitValidation.CallUnary(ctx, req)
 }
 
 // GetProposalStatus calls turnengine.v1.CoordinatorService.GetProposalStatus.
-func (c *coordinatorServiceClient) GetProposalStatus(ctx context.Context, req *connect.Request[services.GetProposalStatusRequest]) (*connect.Response[services.GetProposalStatusResponse], error) {
+func (c *coordinatorServiceClient) GetProposalStatus(ctx context.Context, req *connect.Request[models.GetProposalStatusRequest]) (*connect.Response[models.GetProposalStatusResponse], error) {
 	return c.getProposalStatus.CallUnary(ctx, req)
 }
 
 // CoordinatorServiceHandler is an implementation of the turnengine.v1.CoordinatorService service.
 type CoordinatorServiceHandler interface {
 	// Submit a proposal for validation
-	SubmitProposal(context.Context, *connect.Request[services.SubmitProposalRequest]) (*connect.Response[services.SubmitProposalResponse], error)
+	SubmitProposal(context.Context, *connect.Request[models.SubmitProposalRequest]) (*connect.Response[models.SubmitProposalResponse], error)
 	// Get pending validations for a validator
-	GetPendingValidations(context.Context, *connect.Request[services.GetPendingValidationsRequest]) (*connect.Response[services.GetPendingValidationsResponse], error)
+	GetPendingValidations(context.Context, *connect.Request[models.GetPendingValidationsRequest]) (*connect.Response[models.GetPendingValidationsResponse], error)
 	// Submit validation result
-	SubmitValidation(context.Context, *connect.Request[services.SubmitValidationRequest]) (*connect.Response[services.SubmitValidationResponse], error)
+	SubmitValidation(context.Context, *connect.Request[models.SubmitValidationRequest]) (*connect.Response[models.SubmitValidationResponse], error)
 	// Get proposal status
-	GetProposalStatus(context.Context, *connect.Request[services.GetProposalStatusRequest]) (*connect.Response[services.GetProposalStatusResponse], error)
+	GetProposalStatus(context.Context, *connect.Request[models.GetProposalStatusRequest]) (*connect.Response[models.GetProposalStatusResponse], error)
 }
 
 // NewCoordinatorServiceHandler builds an HTTP handler from the service implementation. It returns
@@ -187,18 +188,18 @@ func NewCoordinatorServiceHandler(svc CoordinatorServiceHandler, opts ...connect
 // UnimplementedCoordinatorServiceHandler returns CodeUnimplemented from all methods.
 type UnimplementedCoordinatorServiceHandler struct{}
 
-func (UnimplementedCoordinatorServiceHandler) SubmitProposal(context.Context, *connect.Request[services.SubmitProposalRequest]) (*connect.Response[services.SubmitProposalResponse], error) {
+func (UnimplementedCoordinatorServiceHandler) SubmitProposal(context.Context, *connect.Request[models.SubmitProposalRequest]) (*connect.Response[models.SubmitProposalResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("turnengine.v1.CoordinatorService.SubmitProposal is not implemented"))
 }
 
-func (UnimplementedCoordinatorServiceHandler) GetPendingValidations(context.Context, *connect.Request[services.GetPendingValidationsRequest]) (*connect.Response[services.GetPendingValidationsResponse], error) {
+func (UnimplementedCoordinatorServiceHandler) GetPendingValidations(context.Context, *connect.Request[models.GetPendingValidationsRequest]) (*connect.Response[models.GetPendingValidationsResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("turnengine.v1.CoordinatorService.GetPendingValidations is not implemented"))
 }
 
-func (UnimplementedCoordinatorServiceHandler) SubmitValidation(context.Context, *connect.Request[services.SubmitValidationRequest]) (*connect.Response[services.SubmitValidationResponse], error) {
+func (UnimplementedCoordinatorServiceHandler) SubmitValidation(context.Context, *connect.Request[models.SubmitValidationRequest]) (*connect.Response[models.SubmitValidationResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("turnengine.v1.CoordinatorService.SubmitValidation is not implemented"))
 }
 
-func (UnimplementedCoordinatorServiceHandler) GetProposalStatus(context.Context, *connect.Request[services.GetProposalStatusRequest]) (*connect.Response[services.GetProposalStatusResponse], error) {
+func (UnimplementedCoordinatorServiceHandler) GetProposalStatus(context.Context, *connect.Request[models.GetProposalStatusRequest]) (*connect.Response[models.GetProposalStatusResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("turnengine.v1.CoordinatorService.GetProposalStatus is not implemented"))
 }
