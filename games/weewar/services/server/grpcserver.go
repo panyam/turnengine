@@ -1,4 +1,11 @@
-package services
+//go:build !wasm
+// +build !wasm
+
+// This file is excluded from WASM builds.
+// It contains gRPC server setup code that requires net/http packages
+// which are not supported by TinyGo's WASM target.
+
+package server
 
 import (
 	"context"
@@ -11,6 +18,7 @@ import (
 	"github.com/panyam/turnengine/engine/coordination"
 	turnengine "github.com/panyam/turnengine/engine/gen/go/turnengine/v1"
 	v1 "github.com/panyam/turnengine/games/weewar/gen/go/weewar/v1"
+	"github.com/panyam/turnengine/games/weewar/services/fsbe"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -27,10 +35,10 @@ func (s *Server) Start(ctx context.Context, srvErr chan error, srvChan chan bool
 	)
 
 	// Create GamesService
-	gamesService := NewFSGamesService()
+	gamesService := fsbe.NewFSGamesService("")
 
 	// Create coordination storage
-	coordStorageDir := DevDataPath("storage/coordination")
+	coordStorageDir := fsbe.DevDataPath("storage/coordination")
 	coordStorage, err := coordination.NewFileCoordinationStorage(coordStorageDir)
 	if err != nil {
 		return fmt.Errorf("failed to create coordination storage: %w", err)
@@ -45,7 +53,7 @@ func (s *Server) Start(ctx context.Context, srvErr chan error, srvChan chan bool
 
 	// Register services
 	v1.RegisterGamesServiceServer(server, gamesService)
-	v1.RegisterWorldsServiceServer(server, NewFSWorldsService())
+	v1.RegisterWorldsServiceServer(server, fsbe.NewFSWorldsService(""))
 	turnengine.RegisterCoordinatorServiceServer(server, coordService)
 
 	l, err := net.Listen("tcp", s.Address)

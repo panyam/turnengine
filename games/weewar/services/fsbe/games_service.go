@@ -1,4 +1,7 @@
-package services
+//go:build !wasm
+// +build !wasm
+
+package fsbe
 
 import (
 	"context"
@@ -11,15 +14,16 @@ import (
 	turnengine "github.com/panyam/turnengine/engine/gen/go/turnengine/v1"
 	"github.com/panyam/turnengine/engine/storage"
 	v1 "github.com/panyam/turnengine/games/weewar/gen/go/weewar/v1"
+	"github.com/panyam/turnengine/games/weewar/services"
 	"google.golang.org/protobuf/proto"
 	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var GAMES_STORAGE_DIR = ""
 
-// FSGamesServiceImpl implements the GamesService gRPC interface
-type FSGamesServiceImpl struct {
-	BaseGamesServiceImpl
+// FSGamesService implements the GamesService gRPC interface
+type FSGamesService struct {
+	services.BaseGamesService
 	WorldsService v1.WorldsServiceServer
 	storage       *storage.FileStorage // Storage area for all files
 
@@ -27,22 +31,25 @@ type FSGamesServiceImpl struct {
 	gameCache    map[string]*v1.Game
 	stateCache   map[string]*v1.GameState
 	historyCache map[string]*v1.GameMoveHistory
-	runtimeCache map[string]*Game
+	runtimeCache map[string]*services.Game
 }
 
 // NewGamesService creates a new GamesService implementation for server mode
-func NewFSGamesService() *FSGamesServiceImpl {
-	if GAMES_STORAGE_DIR == "" {
-		GAMES_STORAGE_DIR = DevDataPath("storage/games")
+func NewFSGamesService(storageDir string) *FSGamesService {
+	if storageDir == "" {
+		if GAMES_STORAGE_DIR == "" {
+			GAMES_STORAGE_DIR = DevDataPath("storage/games")
+		}
+		storageDir = GAMES_STORAGE_DIR
 	}
-	service := &FSGamesServiceImpl{
-		BaseGamesServiceImpl: BaseGamesServiceImpl{},
-		WorldsService:        NewFSWorldsService(),
-		storage:              storage.NewFileStorage(GAMES_STORAGE_DIR),
-		gameCache:            make(map[string]*v1.Game),
-		stateCache:           make(map[string]*v1.GameState),
-		historyCache:         make(map[string]*v1.GameMoveHistory),
-		runtimeCache:         make(map[string]*Game),
+	service := &FSGamesService{
+		BaseGamesService: services.BaseGamesService{},
+		WorldsService:    NewFSWorldsService(""),
+		storage:          storage.NewFileStorage(storageDir),
+		gameCache:        make(map[string]*v1.Game),
+		stateCache:       make(map[string]*v1.GameState),
+		historyCache:     make(map[string]*v1.GameMoveHistory),
+		runtimeCache:     make(map[string]*services.Game),
 	}
 	service.Self = service
 
@@ -50,7 +57,7 @@ func NewFSGamesService() *FSGamesServiceImpl {
 }
 
 // ListGames returns all available games (metadata only for performance)
-func (s *FSGamesServiceImpl) ListGames(ctx context.Context, req *v1.ListGamesRequest) (resp *v1.ListGamesResponse, err error) {
+func (s *FSGamesService) ListGames(ctx context.Context, req *v1.ListGamesRequest) (resp *v1.ListGamesResponse, err error) {
 	resp = &v1.ListGamesResponse{
 		Items: []*v1.Game{},
 		Pagination: &v1.PaginationResponse{
@@ -72,14 +79,14 @@ func (s *FSGamesServiceImpl) ListGames(ctx context.Context, req *v1.ListGamesReq
 }
 
 // DeleteGame deletes a game
-func (s *FSGamesServiceImpl) DeleteGame(ctx context.Context, req *v1.DeleteGameRequest) (resp *v1.DeleteGameResponse, err error) {
+func (s *FSGamesService) DeleteGame(ctx context.Context, req *v1.DeleteGameRequest) (resp *v1.DeleteGameResponse, err error) {
 	resp = &v1.DeleteGameResponse{}
 	err = s.storage.DeleteEntity(req.Id)
 	return
 }
 
 // CreateWorld creates a new world
-func (s *FSGamesServiceImpl) CreateGame(ctx context.Context, req *v1.CreateGameRequest) (resp *v1.CreateGameResponse, err error) {
+func (s *FSGamesService) CreateGame(ctx context.Context, req *v1.CreateGameRequest) (resp *v1.CreateGameResponse, err error) {
 	if req.Game == nil {
 		return nil, fmt.Errorf("game data is required")
 	}
@@ -132,7 +139,7 @@ func (s *FSGamesServiceImpl) CreateGame(ctx context.Context, req *v1.CreateGameR
 }
 
 // GetGame returns a specific game with complete data including tiles and units
-func (s *FSGamesServiceImpl) GetGame(ctx context.Context, req *v1.GetGameRequest) (resp *v1.GetGameResponse, err error) {
+func (s *FSGamesService) GetGame(ctx context.Context, req *v1.GetGameRequest) (resp *v1.GetGameResponse, err error) {
 	if req.Id == "" {
 		return nil, fmt.Errorf("game ID is required")
 	}
@@ -188,7 +195,7 @@ func (s *FSGamesServiceImpl) GetGame(ctx context.Context, req *v1.GetGameRequest
 }
 
 // UpdateGame updates an existing game
-func (s *FSGamesServiceImpl) UpdateGame(ctx context.Context, req *v1.UpdateGameRequest) (resp *v1.UpdateGameResponse, err error) {
+func (s *FSGamesService) UpdateGame(ctx context.Context, req *v1.UpdateGameRequest) (resp *v1.UpdateGameResponse, err error) {
 	if req.GameId == "" {
 		return nil, fmt.Errorf("game ID is required")
 	}
@@ -262,12 +269,12 @@ func (s *FSGamesServiceImpl) UpdateGame(ctx context.Context, req *v1.UpdateGameR
 }
 
 // GetRuntimeGame implements the interface method (for compatibility)
-func (s *FSGamesServiceImpl) GetRuntimeGame(game *v1.Game, gameState *v1.GameState) (*Game, error) {
-	return ProtoToRuntimeGame(game, gameState), nil
+func (s *FSGamesService) GetRuntimeGame(game *v1.Game, gameState *v1.GameState) (*services.Game, error) {
+	return services.ProtoToRuntimeGame(game, gameState), nil
 }
 
 // GetRuntimeGameByID returns a cached runtime game instance for the given game ID
-func (s *FSGamesServiceImpl) GetRuntimeGameByID(ctx context.Context, gameID string) (*Game, error) {
+func (s *FSGamesService) GetRuntimeGameByID(ctx context.Context, gameID string) (*services.Game, error) {
 	// Check runtime cache first
 	if rtGame, ok := s.runtimeCache[gameID]; ok {
 		return rtGame, nil
@@ -280,7 +287,7 @@ func (s *FSGamesServiceImpl) GetRuntimeGameByID(ctx context.Context, gameID stri
 	}
 
 	// Convert to runtime game
-	rtGame := ProtoToRuntimeGame(resp.Game, resp.State)
+	rtGame := services.ProtoToRuntimeGame(resp.Game, resp.State)
 
 	// Cache it
 	s.runtimeCache[gameID] = rtGame
@@ -303,14 +310,6 @@ func serialize(msg proto.Message) []byte {
 	return data
 }
 
-// deserialize converts bytes back to a protobuf message
-func deserialize(data []byte, msg proto.Message) error {
-	if len(data) == 0 {
-		return fmt.Errorf("empty data")
-	}
-	return proto.Unmarshal(data, msg)
-}
-
 // computeHash generates a SHA256 hash of any protobuf message
 func computeHash(msg proto.Message) string {
 	if msg == nil {
@@ -324,10 +323,10 @@ func computeHash(msg proto.Message) string {
 	return hex.EncodeToString(hash[:])
 }
 
-func (s *FSGamesServiceImpl) ProcessMoves(ctx context.Context, req *v1.ProcessMovesRequest) (*v1.ProcessMovesResponse, error) {
+func (s *FSGamesService) ProcessMoves(ctx context.Context, req *v1.ProcessMovesRequest) (*v1.ProcessMovesResponse, error) {
 	// If client didn't provide expected results, run ProcessMoves locally
 	if req.ExpectedResponse == nil {
-		return s.BaseGamesServiceImpl.ProcessMoves(ctx, req)
+		return s.BaseGamesService.ProcessMoves(ctx, req)
 	}
 
 	// Client provided expected results - validate through coordinator
@@ -376,10 +375,10 @@ func (s *FSGamesServiceImpl) ProcessMoves(ctx context.Context, req *v1.ProcessMo
 	return req.ExpectedResponse, nil
 }
 
-// Implement coordination.Callbacks interface
+// ement coordination.Callbacks interface
 
 // OnProposalStarted is called when a proposal is accepted for validation
-func (s *FSGamesServiceImpl) OnProposalStarted(gameID string, proposal *turnengine.ProposalInfo) error {
+func (s *FSGamesService) OnProposalStarted(gameID string, proposal *turnengine.ProposalInfo) error {
 	// Load the game state
 	gameState, err := storage.LoadFSArtifact[*v1.GameState](s.storage, gameID, "state")
 	if err != nil {
@@ -403,7 +402,7 @@ func (s *FSGamesServiceImpl) OnProposalStarted(gameID string, proposal *turnengi
 }
 
 // OnProposalAccepted is called when consensus approves the proposal
-func (s *FSGamesServiceImpl) OnProposalAccepted(gameID string, proposal *turnengine.ProposalInfo) error {
+func (s *FSGamesService) OnProposalAccepted(gameID string, proposal *turnengine.ProposalInfo) error {
 	// The new state is in the proposal's new_state_blob
 	// We need to save it as the new game state
 
@@ -424,7 +423,7 @@ func (s *FSGamesServiceImpl) OnProposalAccepted(gameID string, proposal *turneng
 }
 
 // OnProposalFailed is called when proposal is rejected or times out
-func (s *FSGamesServiceImpl) OnProposalFailed(gameID string, proposal *turnengine.ProposalInfo, reason string) error {
+func (s *FSGamesService) OnProposalFailed(gameID string, proposal *turnengine.ProposalInfo, reason string) error {
 	// Clear the proposal info from game state
 	gameState, err := storage.LoadFSArtifact[*v1.GameState](s.storage, gameID, "state")
 	if err != nil {

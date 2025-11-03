@@ -1,4 +1,7 @@
-package services
+//go:build !wasm
+// +build !wasm
+
+package fsbe
 
 import (
 	"context"
@@ -8,28 +11,32 @@ import (
 
 	"github.com/panyam/turnengine/engine/storage"
 	v1 "github.com/panyam/turnengine/games/weewar/gen/go/weewar/v1"
+	"github.com/panyam/turnengine/games/weewar/services"
 	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var WORLDS_STORAGE_DIR = ""
 
-// FSWorldsServiceImpl implements the FSWorldsService gRPC interface
-type FSWorldsServiceImpl struct {
-	BaseWorldsServiceImpl
+// FSWorldsService implements the FSWorldsService gRPC interface
+type FSWorldsService struct {
+	services.BaseWorldsService
 	storage *storage.FileStorage
 }
 
 // NewFSWorldsService creates a new FSWorldsService implementation
-func NewFSWorldsService() *FSWorldsServiceImpl {
-	if WORLDS_STORAGE_DIR == "" {
-		WORLDS_STORAGE_DIR = DevDataPath("storage/worlds")
+func NewFSWorldsService(storageDir string) *FSWorldsService {
+	if storageDir == "" {
+		if WORLDS_STORAGE_DIR == "" {
+			WORLDS_STORAGE_DIR = DevDataPath("storage/worlds")
+		}
+		storageDir = WORLDS_STORAGE_DIR
 	}
-	service := &FSWorldsServiceImpl{storage: storage.NewFileStorage(WORLDS_STORAGE_DIR)}
+	service := &FSWorldsService{storage: storage.NewFileStorage(storageDir)}
 	return service
 }
 
 // ListWorlds returns all available worlds (metadata only for performance)
-func (s *FSWorldsServiceImpl) ListWorlds(ctx context.Context, req *v1.ListWorldsRequest) (resp *v1.ListWorldsResponse, err error) {
+func (s *FSWorldsService) ListWorlds(ctx context.Context, req *v1.ListWorldsRequest) (resp *v1.ListWorldsResponse, err error) {
 	resp = &v1.ListWorldsResponse{
 		Items: []*v1.World{},
 		Pagination: &v1.PaginationResponse{
@@ -51,7 +58,7 @@ func (s *FSWorldsServiceImpl) ListWorlds(ctx context.Context, req *v1.ListWorlds
 }
 
 // GetWorld returns a specific world with complete data including tiles and units
-func (s *FSWorldsServiceImpl) GetWorld(ctx context.Context, req *v1.GetWorldRequest) (resp *v1.GetWorldResponse, err error) {
+func (s *FSWorldsService) GetWorld(ctx context.Context, req *v1.GetWorldRequest) (resp *v1.GetWorldResponse, err error) {
 	if req.Id == "" {
 		return nil, fmt.Errorf("world ID is required")
 	}
@@ -82,7 +89,7 @@ func (s *FSWorldsServiceImpl) GetWorld(ctx context.Context, req *v1.GetWorldRequ
 }
 
 // UpdateWorld updates an existing world
-func (s *FSWorldsServiceImpl) UpdateWorld(ctx context.Context, req *v1.UpdateWorldRequest) (resp *v1.UpdateWorldResponse, err error) {
+func (s *FSWorldsService) UpdateWorld(ctx context.Context, req *v1.UpdateWorldRequest) (resp *v1.UpdateWorldResponse, err error) {
 	if req.World == nil || req.World.Id == "" {
 		return nil, fmt.Errorf("world ID is required")
 	}
@@ -139,7 +146,7 @@ func (s *FSWorldsServiceImpl) UpdateWorld(ctx context.Context, req *v1.UpdateWor
 }
 
 // DeleteWorld deletes a world
-func (s *FSWorldsServiceImpl) DeleteWorld(ctx context.Context, req *v1.DeleteWorldRequest) (resp *v1.DeleteWorldResponse, err error) {
+func (s *FSWorldsService) DeleteWorld(ctx context.Context, req *v1.DeleteWorldRequest) (resp *v1.DeleteWorldResponse, err error) {
 	if req.Id == "" {
 		return nil, fmt.Errorf("world ID is required")
 	}
@@ -150,7 +157,7 @@ func (s *FSWorldsServiceImpl) DeleteWorld(ctx context.Context, req *v1.DeleteWor
 }
 
 // CreateWorld creates a new world
-func (s *FSWorldsServiceImpl) CreateWorld(ctx context.Context, req *v1.CreateWorldRequest) (resp *v1.CreateWorldResponse, err error) {
+func (s *FSWorldsService) CreateWorld(ctx context.Context, req *v1.CreateWorldRequest) (resp *v1.CreateWorldResponse, err error) {
 	if req.World == nil {
 		return nil, fmt.Errorf("world data is required")
 	}

@@ -1,10 +1,11 @@
-package services
+package tests
 
 import (
 	"context"
 	"testing"
 
 	v1 "github.com/panyam/turnengine/games/weewar/gen/go/weewar/v1"
+	"github.com/panyam/turnengine/games/weewar/services"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -25,10 +26,10 @@ type GetOptionsAtExpectation struct {
 	TotalOptionCount  int
 
 	// Specific coordinate checks for movement options
-	ExpectedMoveCoords []AxialCoord
+	ExpectedMoveCoords []services.AxialCoord
 
 	// Specific coordinate checks for attack options
-	ExpectedAttackCoords []AxialCoord
+	ExpectedAttackCoords []services.AxialCoord
 
 	// Game state expectations
 	CurrentPlayer   int32
@@ -81,22 +82,22 @@ func setupGetOptionsAtTest(t *testing.T, scenario GetOptionsAtTestScenario) *Sin
 	}
 
 	// Create SingletonGamesService
-	wasmService := NewSingletonGamesServiceImpl()
+	singletonService := NewSingletonGamesServiceImpl()
 
 	// Set up the singleton objects
-	wasmService.SingletonGame = &v1.Game{
+	singletonService.SingletonGame = &v1.Game{
 		Id:   "test-game-get-options-" + scenario.WorldId,
 		Name: "Get Options Test Game - " + scenario.WorldId,
 	}
 
-	wasmService.SingletonGameState = gameState
-	wasmService.SingletonGameState.UpdatedAt = timestamppb.Now()
+	singletonService.SingletonGameState = gameState
+	singletonService.SingletonGameState.UpdatedAt = timestamppb.Now()
 
-	wasmService.SingletonGameMoveHistory = &v1.GameMoveHistory{
+	singletonService.SingletonGameMoveHistory = &v1.GameMoveHistory{
 		Groups: []*v1.GameMoveGroup{},
 	}
 
-	wasmService.RuntimeGame = rtGame
+	singletonService.RuntimeGame = rtGame
 
 	t.Logf("Test setup complete - World=%s, CurrentPlayer=%d, TurnCounter=%d, Units=%d",
 		scenario.WorldId, rtGame.CurrentPlayer, rtGame.TurnCounter, rtGame.World.NumUnits())
@@ -107,7 +108,7 @@ func setupGetOptionsAtTest(t *testing.T, scenario GetOptionsAtTestScenario) *Sin
 			coord.Q, coord.R, unit.Player, unit.UnitType, unit.AvailableHealth, unit.DistanceLeft)
 	}
 
-	return wasmService
+	return singletonService
 }
 
 // runGetOptionsAtTest executes a single GetOptionsAt test case

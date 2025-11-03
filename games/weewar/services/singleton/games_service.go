@@ -1,26 +1,27 @@
-package services
+package singleton
 
 import (
 	"context"
 
 	v1 "github.com/panyam/turnengine/games/weewar/gen/go/weewar/v1"
+	"github.com/panyam/turnengine/games/weewar/services"
 	pj "google.golang.org/protobuf/encoding/protojson"
 )
 
-type SingletonGamesServiceImpl struct {
-	BaseGamesServiceImpl
+type SingletonGamesService struct {
+	services.BaseGamesService
 	SingletonGame            *v1.Game
 	SingletonGameState       *v1.GameState
 	SingletonGameMoveHistory *v1.GameMoveHistory
 
-	RuntimeGame *Game
+	RuntimeGame *services.Game
 }
 
 // NOTE - ONly API really needed here are "getters" and "move processors" so no Creations, Deletions, Listing or even
 // GetGame needed - GetGame data is set when we create this
-func NewSingletonGamesServiceImpl() *SingletonGamesServiceImpl {
-	w := &SingletonGamesServiceImpl{
-		BaseGamesServiceImpl: BaseGamesServiceImpl{
+func NewSingletonGamesService() *SingletonGamesService {
+	w := &SingletonGamesService{
+		BaseGamesService: services.BaseGamesService{
 			// WorldsService: SingletonWorldsService
 		},
 		SingletonGame:            &v1.Game{},
@@ -31,18 +32,18 @@ func NewSingletonGamesServiceImpl() *SingletonGamesServiceImpl {
 	return w
 }
 
-func (w *SingletonGamesServiceImpl) WorldData() *v1.WorldData {
+func (w *SingletonGamesService) WorldData() *v1.WorldData {
 	return w.SingletonGameState.WorldData
 }
 
-func (w *SingletonGamesServiceImpl) GetRuntimeGame(game *v1.Game, gameState *v1.GameState) (out *Game, err error) {
+func (w *SingletonGamesService) GetRuntimeGame(game *v1.Game, gameState *v1.GameState) (out *services.Game, err error) {
 	if w.RuntimeGame == nil {
-		w.RuntimeGame = ProtoToRuntimeGame(w.SingletonGame, w.SingletonGameState)
+		w.RuntimeGame = services.ProtoToRuntimeGame(w.SingletonGame, w.SingletonGameState)
 	}
 	return w.RuntimeGame, err
 }
 
-func (w *SingletonGamesServiceImpl) SaveGame(game *v1.Game, state *v1.GameState, history *v1.GameMoveHistory) error {
+func (w *SingletonGamesService) SaveGame(game *v1.Game, state *v1.GameState, history *v1.GameMoveHistory) error {
 	// Update singleton instances with new data
 	w.SingletonGame = game
 	w.SingletonGameState = state
@@ -50,7 +51,7 @@ func (w *SingletonGamesServiceImpl) SaveGame(game *v1.Game, state *v1.GameState,
 	return nil
 }
 
-func (w *SingletonGamesServiceImpl) Load(
+func (w *SingletonGamesService) Load(
 	gameBytes []byte,
 	gameStateBytes []byte,
 	gameMoveHistoryBytes []byte,
@@ -69,7 +70,7 @@ func (w *SingletonGamesServiceImpl) Load(
 
 // WASM-specific implementations that operate on singleton data
 
-func (w *SingletonGamesServiceImpl) GetGame(ctx context.Context, req *v1.GetGameRequest) (*v1.GetGameResponse, error) {
+func (w *SingletonGamesService) GetGame(ctx context.Context, req *v1.GetGameRequest) (*v1.GetGameResponse, error) {
 	return &v1.GetGameResponse{
 		Game:    w.SingletonGame,
 		State:   w.SingletonGameState,
@@ -77,13 +78,7 @@ func (w *SingletonGamesServiceImpl) GetGame(ctx context.Context, req *v1.GetGame
 	}, nil
 }
 
-func (w *SingletonGamesServiceImpl) GetGameState(ctx context.Context, req *v1.GetGameStateRequest) (*v1.GetGameStateResponse, error) {
-	return &v1.GetGameStateResponse{
-		State: w.SingletonGameState,
-	}, nil
-}
-
-func (w *SingletonGamesServiceImpl) UpdateGame(ctx context.Context, req *v1.UpdateGameRequest) (*v1.UpdateGameResponse, error) {
+func (w *SingletonGamesService) UpdateGame(ctx context.Context, req *v1.UpdateGameRequest) (*v1.UpdateGameResponse, error) {
 	// Update singleton instances with new data
 	if req.NewGame != nil {
 		w.SingletonGame = req.NewGame

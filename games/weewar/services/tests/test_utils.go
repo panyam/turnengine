@@ -1,4 +1,4 @@
-package services
+package tests
 
 import (
 	"context"
@@ -7,18 +7,19 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/panyam/turnengine/engine/storage"
 	v1 "github.com/panyam/turnengine/games/weewar/gen/go/weewar/v1"
+	"github.com/panyam/turnengine/games/weewar/services"
+	"github.com/panyam/turnengine/games/weewar/services/fsbe"
 )
 
-func CreateTestWorld(name string, nq, nr int, units []*v1.Unit) *World {
+func CreateTestWorld(name string, nq, nr int, units []*v1.Unit) *services.World {
 	// 1. Create test world with 3 units
-	world := NewWorld("test", nil)
+	world := services.NewWorld("test", nil)
 	// Add some tiles for movement
 	for q := range nq {
 		for r := range nr {
-			coord := AxialCoord{Q: q, R: r}
-			tile := NewTile(coord, 1) // Grass terrain
+			coord := services.AxialCoord{Q: q, R: r}
+			tile := services.NewTile(coord, 1) // Grass terrain
 			world.AddTile(tile)
 		}
 	}
@@ -29,13 +30,11 @@ func CreateTestWorld(name string, nq, nr int, units []*v1.Unit) *World {
 	return world
 }
 
-// LoadTestWorldFromStorage loads world data from storage directory using FSWorldsServiceImpl
+// LoadTestWorldFromStorage loads world data from storage directory using FSWorldsService
 // This allows using real worlds created in the world editor UI
-func LoadTestWorldFromStorage(worldsStorageDir, worldId string) (*World, *v1.GameState, error) {
+func LoadTestWorldFromStorage(worldsStorageDir, worldId string) (*services.World, *v1.GameState, error) {
 	// Create FSWorldsService to load real world data
-	worldsService := &FSWorldsServiceImpl{
-		storage: storage.NewFileStorage(worldsStorageDir),
-	}
+	worldsService := fsbe.NewFSWorldsService(worldsStorageDir)
 
 	// Load the world using GetWorld RPC (same as production code)
 	worldResp, err := worldsService.GetWorld(context.Background(), &v1.GetWorldRequest{
@@ -61,7 +60,7 @@ func LoadTestWorldFromStorage(worldsStorageDir, worldId string) (*World, *v1.Gam
 	}
 
 	// Convert protobuf world data to runtime game
-	rtGame := ProtoToRuntimeGame(dummyGame, gameState)
+	rtGame := services.ProtoToRuntimeGame(dummyGame, gameState)
 
 	// Extract the world from the runtime game
 	rtWorld := rtGame.World
@@ -83,7 +82,7 @@ func CreateTestUnit(q, r int, player, unitType int) *v1.Unit {
 
 // LoadTestWorld loads a real world from the weewar data directory
 // This allows tests to use actual world data created in the editor
-func LoadTestWorld(worldId string) (*World, error) {
+func LoadTestWorld(worldId string) (*services.World, error) {
 	// Default to user's dev-app-data directory
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -118,7 +117,5 @@ func LoadTestWorld(worldId string) (*World, error) {
 	}
 
 	// Create runtime world from proto data
-	world := NewWorld(protoWorld.Name, &protoWorldData)
-
-	return world, nil
+	return services.NewWorld(protoWorld.Name, &protoWorldData), nil
 }

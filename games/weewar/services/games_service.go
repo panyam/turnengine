@@ -10,28 +10,45 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-type GamesServiceImpl interface {
-	v1.GamesServiceServer
+type GamesService interface {
+	// Create a new game
+	CreateGame(context.Context, *v1.CreateGameRequest) (*v1.CreateGameResponse, error)
+	// *
+	// Batch get multiple games by ID
+	GetGames(context.Context, *v1.GetGamesRequest) (*v1.GetGamesResponse, error)
+	// ListGames returns all available games
+	ListGames(context.Context, *v1.ListGamesRequest) (*v1.ListGamesResponse, error)
+	// GetGame returns a specific game with metadata
+	GetGame(context.Context, *v1.GetGameRequest) (*v1.GetGameResponse, error)
+	// *
+	// Delete a particular game
+	DeleteGame(context.Context, *v1.DeleteGameRequest) (*v1.DeleteGameResponse, error)
+	// GetGame returns a specific game with metadata
+	UpdateGame(context.Context, *v1.UpdateGameRequest) (*v1.UpdateGameResponse, error)
+	// Gets the latest game state
+	GetGameState(context.Context, *v1.GetGameStateRequest) (*v1.GetGameStateResponse, error)
+	// List the moves for a game
+	ListMoves(context.Context, *v1.ListMovesRequest) (*v1.ListMovesResponse, error)
+	ProcessMoves(context.Context, *v1.ProcessMovesRequest) (*v1.ProcessMovesResponse, error)
+	GetOptionsAt(context.Context, *v1.GetOptionsAtRequest) (*v1.GetOptionsAtResponse, error)
+	// *
+	// Simulates combat between two units to generate damage distributions
+	// This is a stateless utility method that doesn't require game state
+	SimulateAttack(context.Context, *v1.SimulateAttackRequest) (*v1.SimulateAttackResponse, error)
 	GetRuntimeGame(game *v1.Game, gameState *v1.GameState) (*Game, error)
 }
 
-type BaseGamesServiceImpl struct {
-	v1.UnimplementedGamesServiceServer
-	Self GamesServiceImpl // The actual implementation
+type BaseGamesService struct {
+	Self GamesService // The actual implementation
 }
 
-type WorldsServiceImpl interface {
-	v1.WorldsServiceServer
-}
-
-type BaseWorldsServiceImpl struct {
-	v1.UnimplementedWorldsServiceServer
-	Self WorldsServiceImpl // The actual implementation
+func (s *BaseGamesService) ListMoves(ctx context.Context, req *v1.ListMovesRequest) (resp *v1.ListMovesResponse, err error) {
+	return nil, nil
 }
 
 // ProcessMoves processes moves for an existing game on the wasm side.
 // Unlike the service side games service - it wont persist any changes - it only will return the diffs.
-func (s *BaseGamesServiceImpl) ProcessMoves(ctx context.Context, req *v1.ProcessMovesRequest) (resp *v1.ProcessMovesResponse, err error) {
+func (s *BaseGamesService) ProcessMoves(ctx context.Context, req *v1.ProcessMovesRequest) (resp *v1.ProcessMovesResponse, err error) {
 	if len(req.Moves) == 0 {
 		return nil, fmt.Errorf("at least one move is required")
 	}
@@ -106,7 +123,7 @@ func (s *BaseGamesServiceImpl) ProcessMoves(ctx context.Context, req *v1.Process
 }
 
 // GetOptionsAt returns all available options at a specific position
-func (s *BaseGamesServiceImpl) GetOptionsAt(ctx context.Context, req *v1.GetOptionsAtRequest) (*v1.GetOptionsAtResponse, error) {
+func (s *BaseGamesService) GetOptionsAt(ctx context.Context, req *v1.GetOptionsAtRequest) (*v1.GetOptionsAtResponse, error) {
 	// Load game data using the service implementation
 	gameresp, err := s.Self.GetGame(ctx, &v1.GetGameRequest{Id: req.GameId})
 	if err != nil || gameresp.Game == nil {
@@ -310,7 +327,7 @@ func (s *BaseGamesServiceImpl) GetOptionsAt(ctx context.Context, req *v1.GetOpti
 	}, nil
 }
 
-func (b *BaseGamesServiceImpl) ApplyChangeResults(changes []*v1.GameMoveResult, rtGame *Game, game *v1.Game, state *v1.GameState, history *v1.GameMoveHistory) error {
+func (b *BaseGamesService) ApplyChangeResults(changes []*v1.GameMoveResult, rtGame *Game, game *v1.Game, state *v1.GameState, history *v1.GameMoveHistory) error {
 
 	// TRANSACTIONAL FIX: Temporary rollback to original world for ordered application
 	if parent := rtGame.World.Pop(); parent != nil {
@@ -334,7 +351,7 @@ func (b *BaseGamesServiceImpl) ApplyChangeResults(changes []*v1.GameMoveResult, 
 }
 
 // applyWorldChange applies a single WorldChange to both runtime game and protobuf state
-func (b *BaseGamesServiceImpl) applyWorldChange(change *v1.WorldChange, rtGame *Game, state *v1.GameState) error {
+func (b *BaseGamesService) applyWorldChange(change *v1.WorldChange, rtGame *Game, state *v1.GameState) error {
 	switch changeType := change.ChangeType.(type) {
 	case *v1.WorldChange_UnitMoved:
 		return b.applyUnitMoved(changeType.UnitMoved, rtGame)
@@ -354,7 +371,7 @@ func (b *BaseGamesServiceImpl) applyWorldChange(change *v1.WorldChange, rtGame *
 }
 
 // applyUnitMoved moves a unit in the runtime game
-func (b *BaseGamesServiceImpl) applyUnitMoved(change *v1.UnitMovedChange, rtGame *Game) error {
+func (b *BaseGamesService) applyUnitMoved(change *v1.UnitMovedChange, rtGame *Game) error {
 	if change.PreviousUnit == nil || change.UpdatedUnit == nil {
 		return fmt.Errorf("missing unit data in UnitMovedChange")
 	}
@@ -379,7 +396,7 @@ func (b *BaseGamesServiceImpl) applyUnitMoved(change *v1.UnitMovedChange, rtGame
 }
 
 // applyUnitDamaged updates unit health in the runtime game
-func (b *BaseGamesServiceImpl) applyUnitDamaged(change *v1.UnitDamagedChange, rtGame *Game) error {
+func (b *BaseGamesService) applyUnitDamaged(change *v1.UnitDamagedChange, rtGame *Game) error {
 	if change.UpdatedUnit == nil {
 		return fmt.Errorf("missing updated unit data in UnitDamagedChange")
 	}
@@ -400,7 +417,7 @@ func (b *BaseGamesServiceImpl) applyUnitDamaged(change *v1.UnitDamagedChange, rt
 }
 
 // applyUnitKilled removes a unit from the runtime game
-func (b *BaseGamesServiceImpl) applyUnitKilled(change *v1.UnitKilledChange, rtGame *Game) error {
+func (b *BaseGamesService) applyUnitKilled(change *v1.UnitKilledChange, rtGame *Game) error {
 	if change.PreviousUnit == nil {
 		return fmt.Errorf("missing previous unit data in UnitKilledChange")
 	}
@@ -416,7 +433,7 @@ func (b *BaseGamesServiceImpl) applyUnitKilled(change *v1.UnitKilledChange, rtGa
 }
 
 // applyPlayerChanged updates game state for turn/player changes
-func (b *BaseGamesServiceImpl) applyPlayerChanged(change *v1.PlayerChangedChange, rtGame *Game, state *v1.GameState) error {
+func (b *BaseGamesService) applyPlayerChanged(change *v1.PlayerChangedChange, rtGame *Game, state *v1.GameState) error {
 	rtGame.CurrentPlayer = change.NewPlayer
 	rtGame.TurnCounter = change.NewTurn
 
@@ -428,7 +445,7 @@ func (b *BaseGamesServiceImpl) applyPlayerChanged(change *v1.PlayerChangedChange
 }
 
 // applyUnitBuilt adds a newly built unit to the runtime game
-func (b *BaseGamesServiceImpl) applyUnitBuilt(change *v1.UnitBuiltChange, rtGame *Game) error {
+func (b *BaseGamesService) applyUnitBuilt(change *v1.UnitBuiltChange, rtGame *Game) error {
 	if change.Unit == nil {
 		return fmt.Errorf("missing unit data in UnitBuiltChange")
 	}
@@ -447,7 +464,7 @@ func (b *BaseGamesServiceImpl) applyUnitBuilt(change *v1.UnitBuiltChange, rtGame
 }
 
 // applyCoinsChanged updates a player's coin balance in the runtime game
-func (b *BaseGamesServiceImpl) applyCoinsChanged(change *v1.CoinsChangedChange, rtGame *Game) error {
+func (b *BaseGamesService) applyCoinsChanged(change *v1.CoinsChangedChange, rtGame *Game) error {
 	// Update player's coins in game config
 	for i, player := range rtGame.Config.Players {
 		if player.PlayerId == change.PlayerId {
@@ -459,7 +476,7 @@ func (b *BaseGamesServiceImpl) applyCoinsChanged(change *v1.CoinsChangedChange, 
 }
 
 // convertRuntimeWorldToProto converts runtime world state to protobuf WorldData
-func (b *BaseGamesServiceImpl) convertRuntimeWorldToProto(world *World) *v1.WorldData {
+func (b *BaseGamesService) convertRuntimeWorldToProto(world *World) *v1.WorldData {
 	worldData := &v1.WorldData{
 		Tiles: []*v1.Tile{},
 		Units: []*v1.Unit{},
@@ -496,7 +513,7 @@ func (b *BaseGamesServiceImpl) convertRuntimeWorldToProto(world *World) *v1.Worl
 }
 
 // SimulateAttack simulates combat between two units and returns damage distributions
-func (s *BaseGamesServiceImpl) SimulateAttack(ctx context.Context, req *v1.SimulateAttackRequest) (resp *v1.SimulateAttackResponse, err error) {
+func (s *BaseGamesService) SimulateAttack(ctx context.Context, req *v1.SimulateAttackRequest) (resp *v1.SimulateAttackResponse, err error) {
 	resp = &v1.SimulateAttackResponse{}
 
 	// Set default number of simulations if not provided

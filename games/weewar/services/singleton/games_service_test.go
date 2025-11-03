@@ -1,4 +1,4 @@
-package services
+package singleton
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	v1 "github.com/panyam/turnengine/games/weewar/gen/go/weewar/v1"
+	"github.com/panyam/turnengine/games/weewar/services"
 )
 
 // Test that we can load a game and get options for units
@@ -15,7 +16,7 @@ func TestSingletonGamesService_GetOptionsAt(t *testing.T) {
 	homeDir, _ := os.UserHomeDir()
 	worldsDir := filepath.Join(homeDir, "dev-app-data", "weewar", "storage", "worlds")
 
-	world, gameState, err := LoadTestWorldFromStorage(worldsDir, "32112070")
+	world, gameState, err := services.LoadTestWorldFromStorage(worldsDir, "32112070")
 	if err != nil {
 		t.Skipf("Skipping test - world data not available: %v", err)
 	}
@@ -27,7 +28,7 @@ func TestSingletonGamesService_GetOptionsAt(t *testing.T) {
 	}
 
 	// Create service
-	gamesService := NewSingletonGamesServiceImpl()
+	gamesService := NewSingletonGamesService()
 	gamesService.SingletonGame = game
 	gamesService.SingletonGameState = gameState
 	gamesService.SingletonGameMoveHistory = &v1.GameMoveHistory{}
@@ -44,7 +45,7 @@ func TestSingletonGamesService_GetOptionsAt(t *testing.T) {
 
 	// Find a unit in the world
 	var testUnit *v1.Unit
-	var testCoord AxialCoord
+	var testCoord services.AxialCoord
 
 	for coord, unit := range world.UnitsByCoord() {
 		testUnit = unit
@@ -96,14 +97,14 @@ func TestSingletonGamesService_GetOptionsAt_EmptyTile(t *testing.T) {
 	homeDir, _ := os.UserHomeDir()
 	worldsDir := filepath.Join(homeDir, "dev-app-data", "weewar", "storage", "worlds")
 
-	_, gameState, err := LoadTestWorldFromStorage(worldsDir, "32112070")
+	_, gameState, err := services.LoadTestWorldFromStorage(worldsDir, "32112070")
 	if err != nil {
 		t.Skipf("Skipping test - world data not available: %v", err)
 	}
 
 	game := &v1.Game{Id: "test-game"}
 
-	gamesService := NewSingletonGamesServiceImpl()
+	gamesService := NewSingletonGamesService()
 	gamesService.SingletonGame = game
 	gamesService.SingletonGameState = gameState
 	gamesService.Self = gamesService
@@ -140,7 +141,7 @@ func TestSingletonGamesService_GetRuntimeGame(t *testing.T) {
 		WorldData:     &v1.WorldData{},
 	}
 
-	gamesService := NewSingletonGamesServiceImpl()
+	gamesService := NewSingletonGamesService()
 	gamesService.SingletonGame = game
 	gamesService.SingletonGameState = gameState
 	gamesService.Self = gamesService

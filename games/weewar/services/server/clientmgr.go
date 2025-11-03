@@ -1,4 +1,11 @@
-package services
+//go:build !wasm
+// +build !wasm
+
+// This file is excluded from WASM builds.
+// It contains gRPC client code that requires net/http packages
+// which are not supported by TinyGo's WASM target.
+
+package server
 
 import (
 	"context"
@@ -6,6 +13,7 @@ import (
 	"log"
 
 	protos "github.com/panyam/turnengine/games/weewar/gen/go/weewar/v1"
+	"github.com/panyam/turnengine/games/weewar/services/fsbe"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/metadata"
@@ -19,7 +27,7 @@ type ClientMgr struct {
 	svcAddr         string
 	gamesSvcClient  protos.GamesServiceClient
 	worldsSvcClient protos.WorldsServiceClient
-	authSvc         *AuthService
+	authSvc         *fsbe.AuthService
 	// We may need an auth svc at some point
 }
 
@@ -41,9 +49,11 @@ func (c *ClientMgr) ClientContext(ctx context.Context, loggedInUserId string) co
 	return metadata.AppendToOutgoingContext(context.Background(), "LoggedInUserId", loggedInUserId)
 }
 
-func (c *ClientMgr) GetAuthService() *AuthService {
+func (c *ClientMgr) GetAuthService() *fsbe.AuthService {
 	if c.authSvc == nil {
-		c.authSvc = &AuthService{clients: c}
+		c.authSvc = &fsbe.AuthService{
+			// clients: c
+		}
 	}
 	return c.authSvc
 }

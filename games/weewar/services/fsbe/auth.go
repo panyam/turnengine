@@ -1,22 +1,23 @@
-package services
+package fsbe
 
 import (
+	"github.com/panyam/turnengine/games/weewar/services"
 	"golang.org/x/oauth2"
 )
 
 type AuthService struct {
-	clients *ClientMgr
+	// clients *ClientMgr
 }
 
 // Implement this method to load a user from your DB/Datastore
-func (a *AuthService) GetUserByID(userId string) (user *User, err error) {
-	user = &User{}
+func (a *AuthService) GetUserByID(userId string) (user *services.User, err error) {
+	user = &services.User{}
 	// err = a.clients.GetUserDSClient().GetByID(userId, user)
 	return
 }
 
 // Implement this method to to perform a CreateOrInsert on a user given the login channel etc
-func (a *AuthService) EnsureAuthUser(authtype string, provider string, token *oauth2.Token, userInfo map[string]any) (user *User, err error) {
+func (a *AuthService) EnsureAuthUser(authtype string, provider string, token *oauth2.Token, userInfo map[string]any) (user *services.User, err error) {
 	/*
 		slog.Info("EnsuringUser: ", "user", userInfo)
 		// fullName := fmt.Sprintf("%s %s", userInfo["given_name"].(string), userInfo["family_name"].(string))
