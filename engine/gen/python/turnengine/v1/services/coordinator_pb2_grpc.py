@@ -2,7 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-from turnengine.v1 import coordinator_pb2 as turnengine_dot_v1_dot_coordinator__pb2
+from turnengine.v1.services import coordinator_pb2 as turnengine_dot_v1_dot_services_dot_coordinator__pb2
 
 
 class CoordinatorServiceStub(object):
@@ -18,23 +18,23 @@ class CoordinatorServiceStub(object):
         """
         self.SubmitProposal = channel.unary_unary(
                 '/turnengine.v1.CoordinatorService/SubmitProposal',
-                request_serializer=turnengine_dot_v1_dot_coordinator__pb2.SubmitProposalRequest.SerializeToString,
-                response_deserializer=turnengine_dot_v1_dot_coordinator__pb2.SubmitProposalResponse.FromString,
+                request_serializer=turnengine_dot_v1_dot_services_dot_coordinator__pb2.SubmitProposalRequest.SerializeToString,
+                response_deserializer=turnengine_dot_v1_dot_services_dot_coordinator__pb2.SubmitProposalResponse.FromString,
                 _registered_method=True)
         self.GetPendingValidations = channel.unary_unary(
                 '/turnengine.v1.CoordinatorService/GetPendingValidations',
-                request_serializer=turnengine_dot_v1_dot_coordinator__pb2.GetPendingValidationsRequest.SerializeToString,
-                response_deserializer=turnengine_dot_v1_dot_coordinator__pb2.GetPendingValidationsResponse.FromString,
+                request_serializer=turnengine_dot_v1_dot_services_dot_coordinator__pb2.GetPendingValidationsRequest.SerializeToString,
+                response_deserializer=turnengine_dot_v1_dot_services_dot_coordinator__pb2.GetPendingValidationsResponse.FromString,
                 _registered_method=True)
         self.SubmitValidation = channel.unary_unary(
                 '/turnengine.v1.CoordinatorService/SubmitValidation',
-                request_serializer=turnengine_dot_v1_dot_coordinator__pb2.SubmitValidationRequest.SerializeToString,
-                response_deserializer=turnengine_dot_v1_dot_coordinator__pb2.SubmitValidationResponse.FromString,
+                request_serializer=turnengine_dot_v1_dot_services_dot_coordinator__pb2.SubmitValidationRequest.SerializeToString,
+                response_deserializer=turnengine_dot_v1_dot_services_dot_coordinator__pb2.SubmitValidationResponse.FromString,
                 _registered_method=True)
         self.GetProposalStatus = channel.unary_unary(
                 '/turnengine.v1.CoordinatorService/GetProposalStatus',
-                request_serializer=turnengine_dot_v1_dot_coordinator__pb2.GetProposalStatusRequest.SerializeToString,
-                response_deserializer=turnengine_dot_v1_dot_coordinator__pb2.GetProposalStatusResponse.FromString,
+                request_serializer=turnengine_dot_v1_dot_services_dot_coordinator__pb2.GetProposalStatusRequest.SerializeToString,
+                response_deserializer=turnengine_dot_v1_dot_services_dot_coordinator__pb2.GetProposalStatusResponse.FromString,
                 _registered_method=True)
 
 
@@ -76,23 +76,23 @@ def add_CoordinatorServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'SubmitProposal': grpc.unary_unary_rpc_method_handler(
                     servicer.SubmitProposal,
-                    request_deserializer=turnengine_dot_v1_dot_coordinator__pb2.SubmitProposalRequest.FromString,
-                    response_serializer=turnengine_dot_v1_dot_coordinator__pb2.SubmitProposalResponse.SerializeToString,
+                    request_deserializer=turnengine_dot_v1_dot_services_dot_coordinator__pb2.SubmitProposalRequest.FromString,
+                    response_serializer=turnengine_dot_v1_dot_services_dot_coordinator__pb2.SubmitProposalResponse.SerializeToString,
             ),
             'GetPendingValidations': grpc.unary_unary_rpc_method_handler(
                     servicer.GetPendingValidations,
-                    request_deserializer=turnengine_dot_v1_dot_coordinator__pb2.GetPendingValidationsRequest.FromString,
-                    response_serializer=turnengine_dot_v1_dot_coordinator__pb2.GetPendingValidationsResponse.SerializeToString,
+                    request_deserializer=turnengine_dot_v1_dot_services_dot_coordinator__pb2.GetPendingValidationsRequest.FromString,
+                    response_serializer=turnengine_dot_v1_dot_services_dot_coordinator__pb2.GetPendingValidationsResponse.SerializeToString,
             ),
             'SubmitValidation': grpc.unary_unary_rpc_method_handler(
                     servicer.SubmitValidation,
-                    request_deserializer=turnengine_dot_v1_dot_coordinator__pb2.SubmitValidationRequest.FromString,
-                    response_serializer=turnengine_dot_v1_dot_coordinator__pb2.SubmitValidationResponse.SerializeToString,
+                    request_deserializer=turnengine_dot_v1_dot_services_dot_coordinator__pb2.SubmitValidationRequest.FromString,
+                    response_serializer=turnengine_dot_v1_dot_services_dot_coordinator__pb2.SubmitValidationResponse.SerializeToString,
             ),
             'GetProposalStatus': grpc.unary_unary_rpc_method_handler(
                     servicer.GetProposalStatus,
-                    request_deserializer=turnengine_dot_v1_dot_coordinator__pb2.GetProposalStatusRequest.FromString,
-                    response_serializer=turnengine_dot_v1_dot_coordinator__pb2.GetProposalStatusResponse.SerializeToString,
+                    request_deserializer=turnengine_dot_v1_dot_services_dot_coordinator__pb2.GetProposalStatusRequest.FromString,
+                    response_serializer=turnengine_dot_v1_dot_services_dot_coordinator__pb2.GetProposalStatusResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -122,8 +122,8 @@ class CoordinatorService(object):
             request,
             target,
             '/turnengine.v1.CoordinatorService/SubmitProposal',
-            turnengine_dot_v1_dot_coordinator__pb2.SubmitProposalRequest.SerializeToString,
-            turnengine_dot_v1_dot_coordinator__pb2.SubmitProposalResponse.FromString,
+            turnengine_dot_v1_dot_services_dot_coordinator__pb2.SubmitProposalRequest.SerializeToString,
+            turnengine_dot_v1_dot_services_dot_coordinator__pb2.SubmitProposalResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -149,8 +149,8 @@ class CoordinatorService(object):
             request,
             target,
             '/turnengine.v1.CoordinatorService/GetPendingValidations',
-            turnengine_dot_v1_dot_coordinator__pb2.GetPendingValidationsRequest.SerializeToString,
-            turnengine_dot_v1_dot_coordinator__pb2.GetPendingValidationsResponse.FromString,
+            turnengine_dot_v1_dot_services_dot_coordinator__pb2.GetPendingValidationsRequest.SerializeToString,
+            turnengine_dot_v1_dot_services_dot_coordinator__pb2.GetPendingValidationsResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -176,8 +176,8 @@ class CoordinatorService(object):
             request,
             target,
             '/turnengine.v1.CoordinatorService/SubmitValidation',
-            turnengine_dot_v1_dot_coordinator__pb2.SubmitValidationRequest.SerializeToString,
-            turnengine_dot_v1_dot_coordinator__pb2.SubmitValidationResponse.FromString,
+            turnengine_dot_v1_dot_services_dot_coordinator__pb2.SubmitValidationRequest.SerializeToString,
+            turnengine_dot_v1_dot_services_dot_coordinator__pb2.SubmitValidationResponse.FromString,
             options,
             channel_credentials,
             insecure,
@@ -203,8 +203,8 @@ class CoordinatorService(object):
             request,
             target,
             '/turnengine.v1.CoordinatorService/GetProposalStatus',
-            turnengine_dot_v1_dot_coordinator__pb2.GetProposalStatusRequest.SerializeToString,
-            turnengine_dot_v1_dot_coordinator__pb2.GetProposalStatusResponse.FromString,
+            turnengine_dot_v1_dot_services_dot_coordinator__pb2.GetProposalStatusRequest.SerializeToString,
+            turnengine_dot_v1_dot_services_dot_coordinator__pb2.GetProposalStatusResponse.FromString,
             options,
             channel_credentials,
             insecure,

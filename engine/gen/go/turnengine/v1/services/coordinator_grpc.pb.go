@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.5.1
 // - protoc             (unknown)
-// source: turnengine/v1/coordinator.proto
+// source: turnengine/v1/services/coordinator.proto
 
-package v1
+package services
 
 import (
 	context "context"
@@ -243,5 +243,5 @@ var CoordinatorService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "turnengine/v1/coordinator.proto",
+	Metadata: "turnengine/v1/services/coordinator.proto",
 }

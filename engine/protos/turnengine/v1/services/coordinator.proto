@@ -4,7 +4,7 @@ package turnengine.v1;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/panyam/turnengine/engine/gen/go/turnengine/v1";
+option go_package = "github.com/panyam/turnengine/engine/gen/go/turnengine/v1/services";
 
 // Game-agnostic coordination service for turn-based games
 // This service knows nothing about specific game mechanics

@@ -1,8 +1,10 @@
 // protos/turnengine/v1/models.proto
 
 syntax = "proto3";
+
 import "google/protobuf/timestamp.proto";
-option go_package = "github.com/panyam/turnengine/engine/gen/go/turnengine/v1";
+
+option go_package = "github.com/panyam/turnengine/engine/gen/go/turnengine/v1/models";
 package turnengine.v1;
 
 message Pagination {
