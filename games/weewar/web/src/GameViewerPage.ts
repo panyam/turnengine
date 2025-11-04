@@ -38,10 +38,13 @@ import { TurnOptionsPanel } from './TurnOptionsPanel';
 import { BuildOptionsModal } from './BuildOptionsModal';
 import { GameEventTypes, WorldEventTypes } from './events';
 import { RulesTable, TerrainStats } from './RulesTable';
-import { DockviewApi, DockviewComponent } from 'dockview-core';
-
 /**
- * Game Viewer Page - Interactive game play interface
+ * GameViewerPage - Base implementation with fixed CSS Grid layout
+ *
+ * This is a concrete, fully-functional game viewer with a simple 2-column layout.
+ * Child classes (GameViewerPageDockView, GameViewerPageMobile) can override layout
+ * methods to provide enhanced UIs, but this base class works standalone.
+ *
  * Responsible for:
  * - Loading world as a game instance
  * - Coordinating WASM game engine
@@ -50,25 +53,131 @@ import { DockviewApi, DockviewComponent } from 'dockview-core';
  * - Providing game controls and UI feedback
  */
 export class GameViewerPage extends BasePage implements LCMComponent, GameViewerPageMethods {
-    private wasmBundle: WeewarBundle;
-    private gamesClient: GamesServiceClient;
-    private gameViewPresenterClient: GameViewPresenterClient;
-    private singletonInitializerClient : SingletonInitializerClient;
-    private currentGameId: string | null;
-    private gameScene: PhaserGameScene
-    private world: World  // ✅ Shared World component
-    private terrainStatsPanel: TerrainStatsPanel
-    private unitStatsPanel: UnitStatsPanel
-    private damageDistributionPanel: DamageDistributionPanel
-    private gameLogPanel: GameLogPanel
-    private turnOptionsPanel: TurnOptionsPanel
-    private buildOptionsModal: BuildOptionsModal
-    private rulesTable: RulesTable = new RulesTable();
-    
-    // Dockview interface
-    private dockview: DockviewApi;
-    private themeObserver: MutationObserver | null = null;
-    
+    // ===== Shared State (used by all layout variants) =====
+    protected wasmBundle: WeewarBundle;
+    protected gamesClient: GamesServiceClient;
+    protected gameViewPresenterClient: GameViewPresenterClient;
+    protected singletonInitializerClient: SingletonInitializerClient;
+    protected currentGameId: string | null;
+
+    // ===== Shared Components (used by all layout variants) =====
+    protected gameScene: PhaserGameScene;
+    protected world: World;  // ✅ Shared World component
+    protected terrainStatsPanel: TerrainStatsPanel;
+    protected unitStatsPanel: UnitStatsPanel;
+    protected damageDistributionPanel: DamageDistributionPanel;
+    protected gameLogPanel: GameLogPanel;
+    protected turnOptionsPanel: TurnOptionsPanel;
+    protected buildOptionsModal: BuildOptionsModal;
+    protected rulesTable: RulesTable = new RulesTable();
+
+    // =============================================================================
+    // Layout Methods (can be overridden by child classes)
+    // =============================================================================
+
+    /**
+     * Initialize the layout structure
+     * Base: Simple CSS Grid layout (already in DOM from template)
+     * Override: DockView, Mobile drawer, etc.
+     */
+    protected initializeLayout(): void {
+        // Base implementation: Fixed grid layout (already in DOM from template)
+        // No-op - layout is server-rendered via CSS Grid
+        console.log('Using base fixed grid layout');
+    }
+
+    /**
+     * Get the container where PhaserGameScene should be mounted
+     * Base: Returns #phaser-viewer-container from fixed grid
+     * Override: Return DockView panel container, mobile container, etc.
+     */
+    protected getGameSceneContainer(): HTMLElement {
+        return this.ensureElement('#phaser-viewer-container', 'phaser-viewer-container');
+    }
+
+    /**
+     * Create and attach panel components to the layout
+     * Base: Panels are already in their grid positions from template
+     * Override: Mount panels into DockView or drawer slots
+     */
+    protected createAndAttachPanels(): void {
+        // Create panel components using templates
+        this.terrainStatsPanel = this.createPanelFromTemplate('terrain-stats-panel-template', 'terrain-stats-container', TerrainStatsPanel);
+        this.unitStatsPanel = this.createPanelFromTemplate('unit-stats-panel-template', 'unit-stats-container', UnitStatsPanel);
+        this.damageDistributionPanel = this.createPanelFromTemplate('damage-distribution-panel-template', 'damage-distribution-container', DamageDistributionPanel);
+        this.gameLogPanel = this.createPanelFromTemplate('game-log-panel-template', 'game-log-container', GameLogPanel);
+        this.turnOptionsPanel = this.createPanelFromTemplate('turn-options-panel-template', 'turn-options-container', TurnOptionsPanel);
+    }
+
+    /**
+     * Helper to create a panel from a template and insert it into a container
+     * Base implementation for fixed grid layout
+     */
+    protected createPanelFromTemplate<T>(templateId: string, containerId: string, PanelClass: any): T {
+        const template = document.getElementById(templateId);
+        if (!template) {
+            throw new Error(`${templateId} not found`);
+        }
+
+        const element = template.cloneNode(true) as HTMLElement;
+        element.style.display = 'block';
+        element.id = `${templateId}-instance`;
+
+        // Insert into layout container
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.appendChild(element);
+        }
+
+        return new PanelClass(element, this.eventBus, true) as T;
+    }
+
+    /**
+     * Cleanup layout-specific resources
+     * Base: No special cleanup needed
+     * Override: Dispose DockView, remove event listeners, etc.
+     */
+    protected cleanupLayout(): void {
+        // Base implementation: no special cleanup needed
+        // Child classes override to dispose DockView, etc.
+    }
+
+    /**
+     * Handle game scene resize (called when container resizes)
+     * Base: Find phaser container and resize
+     * Override: DockView has its own resize handling
+     */
+    protected resizeGameCanvas(): void {
+        if (this.gameScene) {
+            const phaserContainer = document.querySelector('#phaser-viewer-container') as HTMLElement;
+            if (phaserContainer) {
+                const width = phaserContainer.clientWidth;
+                const height = phaserContainer.clientHeight;
+
+                setTimeout(() => {
+                    if (this.gameScene) {
+                        this.gameScene.resize(width, height);
+                        this.gameScene.centerCameraOnWorld();
+                    }
+                }, 100);
+            }
+        }
+    }
+
+    /**
+     * Hide loading overlay
+     * Base: Hide #game-loading element
+     * Override: Find loading overlay in DockView panel, etc.
+     */
+    protected hideLoadingOverlay(): void {
+        const gameLoadingOverlay = document.querySelector('#game-loading') as HTMLElement;
+        if (gameLoadingOverlay) {
+            gameLoadingOverlay.style.display = 'none';
+        }
+
+        super.dismissSplashScreen();
+    }
+
     // =============================================================================
     // LCMComponent Interface Implementation
     // =============================================================================
@@ -163,7 +272,7 @@ export class GameViewerPage extends BasePage implements LCMComponent, GameViewer
     /**
      * Show path visualization on the game scene
      */
-    private showPathVisualization(coords: number[], color: number, thickness: number): void {
+    protected showPathVisualization(coords: number[], color: number, thickness: number): void {
         if (!this.gameScene) return;
         
         // Get the movement highlight layer (or selection layer) to draw paths
@@ -179,7 +288,7 @@ export class GameViewerPage extends BasePage implements LCMComponent, GameViewer
     /**
      * Clear path visualization from the game scene
      */
-    private clearPathVisualization(): void {
+    protected clearPathVisualization(): void {
         if (!this.gameScene) return;
         
         // Clear paths from movement layer
@@ -192,7 +301,7 @@ export class GameViewerPage extends BasePage implements LCMComponent, GameViewer
     /**
      * Subscribe to GameState events
      */
-    private subscribeToGameStateEvents(): void {
+    protected subscribeToGameStateEvents(): void {
         // GameViewer ready event - set up interaction callbacks and load world
         this.addSubscription(WorldEventTypes.WORLD_VIEWER_READY, this);
         
@@ -237,362 +346,32 @@ export class GameViewerPage extends BasePage implements LCMComponent, GameViewer
     }
 
     /**
-     * Create WorldViewer, World, and GameState component instances
+     * Create WorldViewer, World, and component instances
      */
-    private createComponents(): void {
+    protected createComponents(): void {
         // ✅ Create shared World component first (subscribes first to server-changes)
         this.world = new World(this.eventBus, 'Game World');
 
-        // Create BuildOptionsModal (separate from DockView)
+        // Create BuildOptionsModal (separate from layout system)
         const modalElement = document.getElementById('build-options-modal');
         if (!modalElement) {
             throw new Error('GameViewerPage: build-options-modal element not found');
         }
         this.buildOptionsModal = new BuildOptionsModal(modalElement, this.eventBus, true);
 
-        // Initialize DockView layout
-        this.initializeDockView();
+        // Initialize layout structure (can be overridden by child classes)
+        this.initializeLayout();
+
+        // Create PhaserGameScene
+        const phaserContainer = this.getGameSceneContainer();
+        this.gameScene = new PhaserGameScene(phaserContainer, this.eventBus, true);
+
+        // Create and attach panel components (can be overridden by child classes)
+        this.createAndAttachPanels();
     }
 
-    /**
-     * Initialize DockView layout with game panels
-     */
-    private initializeDockView(): void {
-        const container = document.getElementById('dockview-container');
-        if (!container) {
-            throw new Error('GameViewerPage: dockview-container not found');
-        }
 
-        // Apply theme class based on current theme
-        const isDarkMode = document.documentElement.classList.contains('dark');
-        container.className = isDarkMode ? 'dockview-theme-dark flex-1' : 'dockview-theme-light flex-1';
-        
-        // Listen for theme changes
-        this.themeObserver = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                    const isDarkMode = document.documentElement.classList.contains('dark');
-                    container.className = isDarkMode ? 'dockview-theme-dark flex-1' : 'dockview-theme-light flex-1';
-                }
-            });
-        });
-        
-        this.themeObserver.observe(document.documentElement, {
-            attributes: true,
-            attributeFilter: ['class']
-        });
-
-        const dockviewComponent = new DockviewComponent(container, {
-            createComponent: (options: any) => {
-                switch (options.name) {
-                    case 'main-game':
-                        return this.createMainGameComponent();
-                    case 'terrain-stats':
-                        return this.createTerrainStatsComponent();
-                    case 'unit-stats':
-                        return this.createUnitStatsComponent();
-                    case 'damage-distribution':
-                        return this.createDamageDistributionComponent();
-                    case 'turn-options':
-                        return this.createTurnOptionsComponent();
-                    case 'game-log':
-                        return this.createGameLogComponent();
-                    default:
-                        return {
-                            element: document.createElement('div'),
-                            init: () => {},
-                            dispose: () => {}
-                        };
-                }
-            }
-        });
-
-        this.dockview = dockviewComponent.api;
-
-        // Load saved layout or create default
-        const savedLayout = this.loadDockviewLayout();
-        if (savedLayout) {
-            try {
-                this.dockview.fromJSON(savedLayout);
-            } catch (e) {
-                console.warn('Failed to restore game viewer dockview layout, using default', e);
-                this.configureDefaultGameLayout();
-            }
-        } else {
-            this.configureDefaultGameLayout();
-        }
-        
-        // Save layout on changes
-        this.dockview.onDidLayoutChange(() => {
-            this.saveDockviewLayout();
-        });
-    }
-
-    /**
-     * Configure the default DockView layout for optimal game viewing
-     */
-    private configureDefaultGameLayout(): void {
-        // Add main game panel (center)
-        this.dockview.addPanel({
-            id: 'main-game-panel',
-            component: 'main-game',
-            title: 'Game',
-            position: { direction: 'right' }
-        });
-
-        // Add terrain stats panel (right side)
-        this.dockview.addPanel({
-            id: 'terrain-stats-panel', 
-            component: 'terrain-stats',
-            title: 'Terrain Info',
-            position: { 
-                direction: 'right',
-                referencePanel: 'main-game-panel'
-            }
-        });
-
-        // Add unit stats panel (below terrain stats panel)
-        this.dockview.addPanel({
-            id: 'unit-stats-panel',
-            component: 'unit-stats',
-            title: 'Unit Info',
-            position: { 
-                direction: 'below',
-                referencePanel: 'terrain-stats-panel'
-            }
-        });
-
-        // Add damage distribution panel (below unit stats panel)
-        this.dockview.addPanel({
-            id: 'damage-distribution-panel',
-            component: 'damage-distribution',
-            title: 'Damage Distribution',
-            position: { 
-                direction: 'below',
-                referencePanel: 'unit-stats-panel'
-            }
-        });
-
-        // Add turn options panel (below damage distribution panel)
-        this.dockview.addPanel({
-            id: 'turn-options-panel',
-            component: 'turn-options',
-            title: 'Turn Options',
-            position: {
-                direction: 'below',
-                referencePanel: 'damage-distribution-panel'
-            }
-        });
-
-        // Add game log panel (left side)
-        this.dockview.addPanel({
-            id: 'game-log-panel',
-            component: 'game-log',
-            title: 'Game Log',
-            position: {
-                direction: 'left',
-                referencePanel: 'main-game-panel'
-            }
-        });
-
-        // Set panel sizes for optimal viewing
-        setTimeout(() => {
-            this.dockview.getPanel('terrain-stats-panel')?.api.setSize({ width: 320 });
-            this.dockview.getPanel('game-log-panel')?.api.setSize({ width: 280 });
-        }, 100);
-    }
-
-    /**
-     * Save the current DockView layout to localStorage
-     */
-    private saveDockviewLayout(): void {
-        if (!this.dockview) return;
-        
-        const layout = this.dockview.toJSON();
-        localStorage.setItem('game-viewer-dockview-layout', JSON.stringify(layout));
-    }
-    
-    /**
-     * Load saved DockView layout from localStorage
-     */
-    private loadDockviewLayout(): any {
-        const saved = localStorage.getItem('game-viewer-dockview-layout');
-        return saved ? JSON.parse(saved) : null;
-    }
-
-    /**
-     * Create main game (Phaser) component
-     */
-    private createMainGameComponent() {
-        const template = document.getElementById('main-game-panel-template');
-        if (!template) {
-            throw new Error('main-game-panel-template not found');
-        }
-
-        const element = template.cloneNode(true) as HTMLElement;
-        element.style.display = 'block';
-        element.id = 'main-game-panel-instance';
-
-        return {
-            element,
-            init: () => {
-                // Find the Phaser container within the cloned template
-                const phaserContainer = element.querySelector('#phaser-viewer-container') as HTMLElement;
-                if (phaserContainer) {
-                    // Create PhaserGameScene with the container
-                    this.gameScene = new PhaserGameScene(phaserContainer, this.eventBus, true);
-                }
-            },
-            dispose: () => {
-                // PhaserGameScene cleanup will be handled by LCM lifecycle
-                // Component disposal is managed by DockView
-            },
-            onDidResize: () => {
-                // Handle panel resize events - resize the Phaser scene
-                if (this.gameScene) {
-                    // Get the current container size
-                    const phaserContainer = element.querySelector('#phaser-viewer-container') as HTMLElement;
-                    if (phaserContainer) {
-                        const width = phaserContainer.clientWidth;
-                        const height = phaserContainer.clientHeight;
-                        
-                        // Use the public resize method
-                        this.gameScene.resize(width, height);
-                    }
-                }
-            }
-        };
-    }
-
-    /**
-     * Create terrain stats component
-     */
-    private createTerrainStatsComponent() {
-        const template = document.getElementById('terrain-stats-panel-template');
-        if (!template) {
-            throw new Error('terrain-stats-panel-template not found');
-        }
-
-        const element = template.cloneNode(true) as HTMLElement;
-        element.style.display = 'block';
-        // Keep the template ID, don't create wrapper instance
-
-        return {
-            element,
-            init: () => {
-                // Create TerrainStatsPanel with the cloned element
-                this.terrainStatsPanel = new TerrainStatsPanel(element, this.eventBus, true);
-            },
-            dispose: () => {
-                // TerrainStatsPanel cleanup will be handled by LCM lifecycle
-                // Component disposal is managed by DockView
-            }
-        };
-    }
-
-    /**
-     * Create unit stats component
-     */
-    private createUnitStatsComponent() {
-        const template = document.getElementById('unit-stats-panel-template');
-        if (!template) {
-            throw new Error('unit-stats-panel-template not found');
-        }
-
-        const element = template.cloneNode(true) as HTMLElement;
-        element.style.display = 'block';
-        // Keep the template ID, don't create wrapper instance
-
-        return {
-            element,
-            init: () => {
-                // Create UnitStatsPanel with the cloned element
-                this.unitStatsPanel = new UnitStatsPanel(element, this.eventBus, true);
-            },
-            dispose: () => {
-                // UnitStatsPanel cleanup will be handled by LCM lifecycle
-                // Component disposal is managed by DockView
-            }
-        };
-    }
-
-    /**
-     * Create turn options component
-     */
-    private createTurnOptionsComponent() {
-        const template = document.getElementById('turn-options-panel-template');
-        if (!template) {
-            throw new Error('turn-options-panel-template not found');
-        }
-
-        const element = template.cloneNode(true) as HTMLElement;
-        element.style.display = 'block';
-
-        return {
-            element,
-            init: () => {
-                // Create TurnOptionsPanel with the cloned element
-                this.turnOptionsPanel = new TurnOptionsPanel(element, this.eventBus, true);
-            },
-            dispose: () => {
-                // TurnOptionsPanel cleanup will be handled by LCM lifecycle
-                // Component disposal is managed by DockView
-            }
-        };
-    }
-
-    /**
-     * Create damage distribution component
-     */
-    private createDamageDistributionComponent() {
-        const template = document.getElementById('damage-distribution-panel-template');
-        if (!template) {
-            throw new Error('damage-distribution-panel-template not found');
-        }
-
-        const element = template.cloneNode(true) as HTMLElement;
-        element.style.display = 'block';
-
-        return {
-            element,
-            init: () => {
-                // Create DamageDistributionPanel with the cloned element
-                this.damageDistributionPanel = new DamageDistributionPanel(element, this.eventBus, true);
-            },
-            dispose: () => {
-                // DamageDistributionPanel cleanup will be handled by LCM lifecycle
-                // Component disposal is managed by DockView
-            }
-        };
-    }
-
-    /**
-     * Create game log component
-     */
-    private createGameLogComponent() {
-        const template = document.getElementById('game-log-panel-template');
-        if (!template) {
-            throw new Error('game-log-panel-template not found');
-        }
-
-        const element = template.cloneNode(true) as HTMLElement;
-        element.style.display = 'block';
-        // Keep the template ID, don't create wrapper instance
-
-        return {
-            element,
-            init: () => {
-                // Create GameLogPanel with the cloned element
-                this.gameLogPanel = new GameLogPanel(element, this.eventBus);
-            },
-            dispose: () => {
-                // GameLogPanel cleanup will be handled by LCM lifecycle
-                // Component disposal is managed by DockView
-            }
-        };
-    }
-
-    private async loadWASM(): Promise<void> {
+    protected async loadWASM(): Promise<void> {
         // Create base bundle with module configuration
         this.wasmBundle  = new WeewarBundle();
         this.gamesClient = new GamesServiceClient(this.wasmBundle);
@@ -606,7 +385,7 @@ export class GameViewerPage extends BasePage implements LCMComponent, GameViewer
      * Initialize game using WASM game engine
      * This now handles both WASM loading and World creation in GameState
      */
-    private async initializePresenter(): Promise<void> {
+    protected async initializePresenter(): Promise<void> {
         // Get raw JSON data from page elements
         const gameElement = document.getElementById('game.data-json')!;
         const gameStateElement = document.getElementById('game-state-data-json')!;
@@ -666,7 +445,7 @@ export class GameViewerPage extends BasePage implements LCMComponent, GameViewer
     /**
      * Internal method to bind game-specific events (called from activate() phase)
      */
-    private bindGameSpecificEvents(): void {
+    protected bindGameSpecificEvents(): void {
         // End Turn button
         const endTurnBtn = document.getElementById('end-turn-btn')!;
         endTurnBtn.addEventListener('click', () => {
@@ -685,7 +464,7 @@ export class GameViewerPage extends BasePage implements LCMComponent, GameViewer
     /**
      * Handle Screenshot button click
      */
-    private async handleScreenshotClick(): Promise<void> {
+    protected async handleScreenshotClick(): Promise<void> {
         if (!this.currentGameId) {
             console.error('No game ID available');
             this.showToast('Error', 'No game ID available', 'error');
@@ -724,7 +503,7 @@ export class GameViewerPage extends BasePage implements LCMComponent, GameViewer
     /**
      * Handle End Turn button click
      */
-    private async handleEndTurnClick(): Promise<void> {
+    protected async handleEndTurnClick(): Promise<void> {
         if (!this.currentGameId) {
             console.error('No game ID available');
             return;
@@ -737,49 +516,11 @@ export class GameViewerPage extends BasePage implements LCMComponent, GameViewer
     }
 
 
-    /**
-     * Hide the loading overlay in the main game panel
-     */
-    private hideLoadingOverlay(): void {
-        // Find the loading overlay in the main game panel instance
-        const gameLoadingOverlay = document.querySelector('#main-game-panel-instance #game-loading') as HTMLElement;
-        if (gameLoadingOverlay) {
-            gameLoadingOverlay.style.display = 'none';
-        }
-
-        // Dismiss splash screen once game is fully loaded
-        super.dismissSplashScreen();
-    }
-
-    /**
-     * Resize the game canvas to fit the container properly
-     */
-    private resizeGameCanvas(): void {
-        if (this.gameScene) {
-            // Find the Phaser container in the main game panel
-            const phaserContainer = document.querySelector('#main-game-panel-instance #phaser-viewer-container') as HTMLElement;
-            if (phaserContainer) {
-                // Force a resize to ensure the canvas fits the container
-                const width = phaserContainer.clientWidth;
-                const height = phaserContainer.clientHeight;
-                
-                // Add a small delay to ensure DOM has settled
-                setTimeout(() => {
-                    if (this.gameScene) {
-                        this.gameScene.resize(width, height);
-
-                        // Center camera on the world after loading
-                        this.gameScene.centerCameraOnWorld();
-                    }
-                }, 100);
-            }
-        }
-    }
 
     /**
      * UI update functions
      */
-    private updateGameStatusBanner(status: string, currentPlayer?: number): void {
+    protected updateGameStatusBanner(status: string, currentPlayer?: number): void {
         const statusElement = document.getElementById('game-status');
         if (statusElement) {
             statusElement.textContent = status;
@@ -790,7 +531,7 @@ export class GameViewerPage extends BasePage implements LCMComponent, GameViewer
         }
     }
 
-    private updateGameUIFromState(gameState: ProtoGameState): void {
+    protected updateGameUIFromState(gameState: ProtoGameState): void {
         // Update game status with player-specific color - use player ID directly
         this.updateGameStatusBanner(`Ready - Player ${gameState.currentPlayer}'s Turn`, gameState.currentPlayer);
         
@@ -798,7 +539,7 @@ export class GameViewerPage extends BasePage implements LCMComponent, GameViewer
         this.updateTurnCounter(gameState.turnCounter);
     }
     
-    private updateTurnCounter(turnCounter: number): void {
+    protected updateTurnCounter(turnCounter: number): void {
         const turnElement = document.getElementById('turn-counter');
         if (turnElement) {
             turnElement.textContent = `Turn ${turnCounter}`;
@@ -983,7 +724,7 @@ export class GameViewerPage extends BasePage implements LCMComponent, GameViewer
   /**
    * Update End Turn button enabled/disabled state based on current player
    */
-  private updateEndTurnButtonState(currentPlayer: number): void {
+  protected updateEndTurnButtonState(currentPlayer: number): void {
     const endTurnBtn = document.getElementById('end-turn-btn') as HTMLButtonElement;
     if (endTurnBtn) {
       // TODO: Get the actual player ID from the game/user context

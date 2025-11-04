@@ -1,4 +1,4 @@
-<!-- templates/GameViewerPageBase.html - Simple Fixed Grid Layout -->
+<!-- templates/GameViewerPage.html -->
 {{# include "BasePage.html" #}}
 
 {{ define "ExtraHeaderButtons" }}
@@ -18,6 +18,15 @@
         End Turn
     </button>
 
+    <!-- Undo Button -->
+    <button id="undo-move-btn" type="button" disabled
+        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-400 bg-gray-200 dark:bg-gray-700 dark:text-gray-500 cursor-not-allowed">
+        <svg class="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+        </svg>
+        Undo
+    </button>
+
     <!-- Screenshot Button -->
     <button id="capture-screenshot-btn" type="button"
         class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-700 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 dark:focus:ring-offset-gray-800">
@@ -32,80 +41,104 @@
 
 {{ define "__ExtraHeadSection" }}
 <style>
-    /* Fixed Grid Layout - Simple and Fast */
-    #game-viewer-grid {
-        display: grid !important;
-        grid-template-columns: 1fr 320px !important;
-        grid-template-rows: 1fr !important;
-        gap: 1rem !important;
-        height: 100% !important;
-        width: 100% !important;
-        padding: 1rem !important;
-        overflow: hidden !important;
-        box-sizing: border-box !important;
+    /* Game viewer specific styles */
+    #game-viewer-container {
+        @apply h-full w-full;
+    }
+    
+    /* Action panel styles */
+    .action-panel {
+        @apply bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700;
+    }
+    
+    /* Unit selection highlight */
+    .selected-unit {
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+    }
+    
+    /* Move/attack indicators */
+    .valid-move {
+        background-color: rgba(34, 197, 94, 0.3) !important;
+    }
+    
+    .valid-attack {
+        background-color: rgba(239, 68, 68, 0.3) !important;
     }
 
-    #game-scene-container {
-        grid-column: 1 !important;
-        grid-row: 1 !important;
-        min-height: 0 !important;
-        min-width: 0 !important;
-        overflow: hidden !important;
-        display: flex !important;
-        flex-direction: column !important;
+    /* Ensure dockview fills available space */
+    #dockview-container { @apply h-full w-full; }
+    
+    
+    /* Theme overrides for consistency */
+    .dockview-theme-dark {
+        --dv-background-color: theme('colors.gray.900');
+        --dv-paneview-header-background: theme('colors.gray.800');
+        --dv-tab-background: theme('colors.gray.800');
+        --dv-tab-color: theme('colors.gray.400');
+        --dv-activeTab-background: theme('colors.gray.700');
+        --dv-activeTab-color: theme('colors.white');
+        --dv-separator-border: theme('colors.gray.700');
+        --dv-group-header-background: theme('colors.gray.800');
+        --dv-group-header-border: theme('colors.gray.700');
+        
+        /* Separator/Splitter styling */
+        --dv-separator-handle-background-color: theme('colors.gray.600');
+        --dv-separator-handle-hover-background-color: theme('colors.blue.500');
+        
+        /* Drag & Drop styling */
+        --dv-drag-over-background-color: theme('colors.blue.500' / 0.2);
+        --dv-drag-over-border-color: theme('colors.blue.500');
+        
+        /* Group view background */
+        --dv-group-view-background-color: theme('colors.gray.800');
+        
+        /* Active group tab colors */
+        --dv-activegroup-visiblepanel-tab-background-color: theme('colors.gray.700');
+        --dv-activegroup-visiblepanel-tab-color: theme('colors.white');
+        --dv-activegroup-hiddenpanel-tab-background-color: theme('colors.gray.600');
+        --dv-activegroup-hiddenpanel-tab-color: theme('colors.gray.300');
+        
+        /* Inactive group tab colors */
+        --dv-inactivegroup-visiblepanel-tab-background-color: theme('colors.gray.800');
+        --dv-inactivegroup-visiblepanel-tab-color: theme('colors.gray.400');
+        --dv-inactivegroup-hiddenpanel-tab-background-color: theme('colors.gray.700');
+        --dv-inactivegroup-hiddenpanel-tab-color: theme('colors.gray.500');
     }
-
-    #phaser-viewer-container {
-        flex: 1 !important;
-        min-height: 5 !important;
-        min-width: 5 !important;
-        position: relative !important;
-    }
-
-    #sidebar-panels {
-        grid-column: 2 !important;
-        grid-row: 1 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        gap: 1rem !important;
-        overflow-y: auto !important;
-        min-height: 0 !important;
-    }
-
-    .panel-card {
-        background-color: white;
-        border-radius: 0.5rem;
-        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-        border: 1px solid #e5e7eb;
-        flex-shrink: 0;
-    }
-
-    :root.dark .panel-card {
-        background-color: #1f2937;
-        border-color: #374151;
-    }
-
-    .panel-header {
-        padding: 0.75rem;
-        border-bottom: 1px solid #e5e7eb;
-    }
-
-    :root.dark .panel-header {
-        border-bottom-color: #374151;
-    }
-
-    .panel-title {
-        font-size: 0.875rem;
-        font-weight: 500;
-        color: #111827;
-    }
-
-    :root.dark .panel-title {
-        color: white;
-    }
-
-    .panel-body {
-        padding: 0.75rem;
+    
+    /* Light theme support */
+    .dockview-theme-light {
+        --dv-background-color: theme('colors.gray.50');
+        --dv-paneview-header-background: theme('colors.white');
+        --dv-tab-background: theme('colors.white');
+        --dv-tab-color: theme('colors.gray.600');
+        --dv-activeTab-background: theme('colors.gray.100');
+        --dv-activeTab-color: theme('colors.gray.900');
+        --dv-separator-border: theme('colors.gray.200');
+        --dv-group-header-background: theme('colors.white');
+        --dv-group-header-border: theme('colors.gray.200');
+        
+        /* Separator/Splitter styling */
+        --dv-separator-handle-background-color: theme('colors.gray.300');
+        --dv-separator-handle-hover-background-color: theme('colors.blue.500');
+        
+        /* Drag & Drop styling */
+        --dv-drag-over-background-color: theme('colors.blue.500' / 0.2);
+        --dv-drag-over-border-color: theme('colors.blue.500');
+        
+        /* Group view background */
+        --dv-group-view-background-color: theme('colors.white');
+        
+        /* Active group tab colors */
+        --dv-activegroup-visiblepanel-tab-background-color: theme('colors.gray.100');
+        --dv-activegroup-visiblepanel-tab-color: theme('colors.gray.900');
+        --dv-activegroup-hiddenpanel-tab-background-color: theme('colors.gray.200');
+        --dv-activegroup-hiddenpanel-tab-color: theme('colors.gray.700');
+        
+        /* Inactive group tab colors */
+        --dv-inactivegroup-visiblepanel-tab-background-color: theme('colors.white');
+        --dv-inactivegroup-visiblepanel-tab-color: theme('colors.gray.600');
+        --dv-inactivegroup-hiddenpanel-tab-background-color: theme('colors.gray.100');
+        --dv-inactivegroup-hiddenpanel-tab-color: theme('colors.gray.500');
     }
 </style>
 {{ end }}
@@ -114,11 +147,11 @@
     <input id="gameIdInput" value="{{ .GameId }}" type="hidden" />
     <input id="playerCount" value="{{ .PlayerCount }}" type="hidden" />
     <input id="maxTurns" value="{{ .MaxTurns }}" type="hidden" />
-
+    
     <!-- Game Viewer Container -->
-    <main class="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900" style="min-height: 0;">
+    <main class="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 min-h-0">
         <!-- Game Status Bar -->
-        <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-2 flex-shrink-0">
+        <div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-4 py-2">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-4">
                     <span id="game-status" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
@@ -142,53 +175,8 @@
             </div>
         </div>
 
-        <!-- Fixed Grid Layout -->
-        <div id="game-viewer-grid" class="flex-1" style="min-height: 0;">
-            <!-- Game Scene (Left/Main) -->
-            <div id="game-scene-container" class="panel-card">
-                <div id="phaser-viewer-container" class="w-full h-full relative">
-                    <!-- Loading overlay -->
-                    <div id="game-loading" class="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-75 z-10">
-                        <div class="text-white text-center">
-                            <svg class="animate-spin h-12 w-12 mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            <p>Loading Game...</p>
-                        </div>
-                    </div>
-                    <!-- Phaser canvas will be inserted here -->
-                </div>
-            </div>
-
-            <!-- Sidebar Panels (Right) -->
-            <div id="sidebar-panels">
-                <!-- Turn Options Panel -->
-                <div id="turn-options-container" class="panel-card">
-                    <!-- Panel content will be inserted from template -->
-                </div>
-
-                <!-- Unit Stats Panel -->
-                <div id="unit-stats-container" class="panel-card">
-                    <!-- Panel content will be inserted from template -->
-                </div>
-
-                <!-- Terrain Stats Panel -->
-                <div id="terrain-stats-container" class="panel-card">
-                    <!-- Panel content will be inserted from template -->
-                </div>
-
-                <!-- Damage Distribution Panel -->
-                <div id="damage-distribution-container" class="panel-card">
-                    <!-- Panel content will be inserted from template -->
-                </div>
-
-                <!-- Game Log Panel -->
-                <div id="game-log-container" class="panel-card">
-                    <!-- Panel content will be inserted from template -->
-                </div>
-            </div>
-        </div>
+        <!-- Main Dockview Container -->
+        <div id="dockview-container" class="flex-1 min-h-0"></div>
 
         <!-- Build Options Modal -->
         <div id="build-options-modal" class="modal-overlay hidden fixed inset-0 bg-black bg-opacity-50 items-center justify-center z-50">
@@ -219,12 +207,18 @@
             </div>
         </div>
 
-        <!-- Hidden Panel Templates -->
-        <div style="display: none;">
+        <!-- Hidden Panel Templates for Dockview -->
+        <div>
+            <div id="main-game-panel-template">
+                {{# include "panels/MainGamePanel.html" #}}
+            </div>
             {{# include "TerrainStatsPanel.html" #}}
             {{# include "UnitStatsPanel.html" #}}
             {{# include "TurnOptionsPanel.html" #}}
             {{# include "DamageDistributionPanel.html" #}}
+            <div id="game-actions-panel-template">
+                {{# include "panels/GameActionsPanel.html" #}}
+            </div>
             <div id="game-log-panel-template">
                 {{# include "panels/GameLogPanel.html" #}}
             </div>
@@ -247,10 +241,10 @@
 <!-- WASM and Game Scripts -->
 <script src="{{.WasmExecJsPath}}"></script>
 <input id = "wasmBundlePathField" type=hidden value="{{.WasmBundlePath}}" />
-<!-- Include generated JS for GameViewerPage (base class) -->
-{{# include "gen/GameViewerPage.html" #}}
+<!-- Include generated JS for GameViewerPageDockView -->
+{{# include "gen/GameViewerPageDockView.html" #}}
 {{ end }}
 
-{{ define "GameViewerPage" }}
+{{ define "GameViewerPageDockView" }}
 {{ template "BasePage" . }}
 {{ end }}
