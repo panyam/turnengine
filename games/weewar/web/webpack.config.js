@@ -28,6 +28,7 @@ const components = [
   ["StartGamePage", 0, "ts"],
   ["GameViewerPage", 0, "ts"],
   ["GameViewerPageDockView", 0, "ts"],
+  ["GameViewerPageDockViewFull", 0, "ts"],
   ["AttackSimulatorPage", 0, "ts"],
 ];
 

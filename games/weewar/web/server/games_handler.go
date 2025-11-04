@@ -31,6 +31,8 @@ func (r *RootViewsHandler) gameViewerHandler(w http.ResponseWriter, req *http.Re
 	// Map layout to template name
 	var templateName string
 	switch layout {
+	case "dockviewfull":
+		templateName = "GameViewerPageDockViewFull"
 	case "dockview":
 		templateName = "GameViewerPageDockView"
 	case "mobile":
