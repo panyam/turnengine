@@ -1,4 +1,4 @@
-<!-- templates/GameViewerPageBase.html - Simple Fixed Grid Layout -->
+<!-- templates/GameViewerPage.html - Simple Fixed Grid Layout -->
 {{# include "BasePage.html" #}}
 
 {{ define "ExtraHeaderButtons" }}
@@ -220,6 +220,7 @@
         </div>
 
         <!-- Hidden Panel Templates -->
+        {{#/*
         <div style="display: none;">
             {{# include "TerrainStatsPanel.html" #}}
             {{# include "UnitStatsPanel.html" #}}
@@ -229,6 +230,7 @@
                 {{# include "panels/GameLogPanel.html" #}}
             </div>
         </div>
+        */#}}
 
         <!-- Hidden World Data for Frontend -->
         <pre id="game.data-json" style="display: none;">{{ if .Game }}{{ .Game | ToJson }}{{ else }}null{{ end }}</pre>

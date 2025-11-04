@@ -1,4 +1,4 @@
-<!-- templates/GameViewerPage.html -->
+<!-- templates/GameViewerPageDockView.html -->
 {{# include "BasePage.html" #}}
 
 {{ define "ExtraHeaderButtons" }}
@@ -16,15 +16,6 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 9l3 3m0 0l-3 3m3-3H8m13 0a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         End Turn
-    </button>
-
-    <!-- Undo Button -->
-    <button id="undo-move-btn" type="button" disabled
-        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-400 bg-gray-200 dark:bg-gray-700 dark:text-gray-500 cursor-not-allowed">
-        <svg class="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
-        </svg>
-        Undo
     </button>
 
     <!-- Screenshot Button -->
@@ -147,7 +138,7 @@
     <input id="gameIdInput" value="{{ .GameId }}" type="hidden" />
     <input id="playerCount" value="{{ .PlayerCount }}" type="hidden" />
     <input id="maxTurns" value="{{ .MaxTurns }}" type="hidden" />
-    
+
     <!-- Game Viewer Container -->
     <main class="flex-1 flex flex-col bg-gray-50 dark:bg-gray-900 min-h-0">
         <!-- Game Status Bar -->
@@ -212,15 +203,29 @@
             <div id="main-game-panel-template">
                 {{# include "panels/MainGamePanel.html" #}}
             </div>
-            {{# include "TerrainStatsPanel.html" #}}
-            {{# include "UnitStatsPanel.html" #}}
-            {{# include "TurnOptionsPanel.html" #}}
-            {{# include "DamageDistributionPanel.html" #}}
-            <div id="game-actions-panel-template">
-                {{# include "panels/GameActionsPanel.html" #}}
+            <!-- Turn Options Panel -->
+            <div id="turn-options-container" class="panel-card">
+                <!-- Panel content will be inserted from template -->
             </div>
-            <div id="game-log-panel-template">
-                {{# include "panels/GameLogPanel.html" #}}
+
+            <!-- Unit Stats Panel -->
+            <div id="unit-stats-container" class="panel-card">
+                <!-- Panel content will be inserted from template -->
+            </div>
+
+            <!-- Terrain Stats Panel -->
+            <div id="terrain-stats-container" class="panel-card">
+                <!-- Panel content will be inserted from template -->
+            </div>
+
+            <!-- Damage Distribution Panel -->
+            <div id="damage-distribution-container" class="panel-card">
+                <!-- Panel content will be inserted from template -->
+            </div>
+
+            <!-- Game Log Panel -->
+            <div id="game-log-container" class="panel-card">
+                <!-- Panel content will be inserted from template -->
             </div>
         </div>
 

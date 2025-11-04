@@ -1,4 +1,4 @@
-import { GameViewerPage } from './GameViewerPage';
+import { GameViewerPage } from './GameViewerPageBase';
 import { DockviewApi, DockviewComponent } from 'dockview-core';
 import { TerrainStatsPanel } from './TerrainStatsPanel';
 import { UnitStatsPanel } from './UnitStatsPanel';
@@ -18,11 +18,14 @@ import { Unit, Tile, World } from './World';
 export class GameViewerPageDockView extends GameViewerPage {
     private dockview: DockviewApi;
     private themeObserver: MutationObserver | null = null;
+    // protected createGameScene = false;
+
+    // protected getGameSceneContainer(): HTMLElement { return this.ensureElement('#game-scene-container', 'game-scene-container'); }
 
     /**
      * Override: Initialize DockView instead of fixed grid
      */
-    protected initializeLayout(): void {
+    override initializeLayout(): void {
         const container = document.getElementById('dockview-container');
         if (!container) {
             throw new Error('GameViewerPageDockView: dockview-container not found');
@@ -113,18 +116,16 @@ export class GameViewerPageDockView extends GameViewerPage {
         // DockView panels handle their own resize via onDidResize
         // Just trigger a manual resize here as fallback
         if (this.gameScene) {
-            const phaserContainer = document.querySelector('#main-game-panel-instance #phaser-viewer-container') as HTMLElement;
-            if (phaserContainer) {
-                const width = phaserContainer.clientWidth;
-                const height = phaserContainer.clientHeight;
+            const phaserContainer = this.getGameSceneContainer(); //document.querySelector('#main-game-panel-instance #phaser-viewer-container') as HTMLElement;
+            const width = phaserContainer.clientWidth;
+            const height = phaserContainer.clientHeight;
 
-                setTimeout(() => {
-                    if (this.gameScene) {
-                        this.gameScene.resize(width, height);
-                        this.gameScene.centerCameraOnWorld();
-                    }
-                }, 100);
-            }
+            setTimeout(() => {
+                if (this.gameScene) {
+                    this.gameScene.resize(width, height);
+                    this.gameScene.centerCameraOnWorld();
+                }
+            }, 100);
         }
     }
 
@@ -132,7 +133,7 @@ export class GameViewerPageDockView extends GameViewerPage {
      * Override: Hide loading overlay in DockView panel
      */
     protected hideLoadingOverlay(): void {
-        const gameLoadingOverlay = document.querySelector('#main-game-panel-instance #game-loading') as HTMLElement;
+        const gameLoadingOverlay = document.querySelector('#game-loading') as HTMLElement;
         if (gameLoadingOverlay) {
             gameLoadingOverlay.style.display = 'none';
         }
@@ -240,35 +241,40 @@ export class GameViewerPageDockView extends GameViewerPage {
      * Create main game (Phaser) component for DockView
      */
     private createMainGameComponent() {
-        const template = document.getElementById('main-game-panel-template');
-        if (!template) {
-            throw new Error('main-game-panel-template not found');
-        }
+        let element: HTMLElement
+        if (this.createGameScene) {
+            element = this.gameScene.getContainerElement(); // getGameSceneContainer();
+            element.style.display = 'block';
+        } else {
+            const template = document.getElementById('main-game-panel-template');
+            if (!template) {
+                throw new Error('main-game-panel-template not found');
+            }
 
-        const element = template.cloneNode(true) as HTMLElement;
-        element.style.display = 'block';
-        element.id = 'main-game-panel-instance';
+            element = template// .cloneNode(true) as HTMLElement;
+            element.style.display = 'block';
+            element.id = 'main-game-panel-instance';
+        }
 
         return {
             element,
-            init: () => {
-                // Find the Phaser container within the cloned template
+            init: async () => {
+              if (!this.createGameScene) {
                 const phaserContainer = element.querySelector('#phaser-viewer-container') as HTMLElement;
-                if (phaserContainer) {
-                    // Create PhaserGameScene with the container
-                    // DockView calls init() after panel is mounted and sized
-                    this.gameScene = new PhaserGameScene(phaserContainer, this.eventBus, true);
-                }
+                // Create PhaserGameScene with the container
+                // DockView calls init() after panel is mounted and sized
+                this.gameScene = new PhaserGameScene(phaserContainer, this.eventBus, true);
+                await this.gameScene.performLocalInit()
+                await this.initializePresenter();
+              }
             },
             dispose: () => {
-                // PhaserGameScene cleanup will be handled by LCM lifecycle
-                // Component disposal is managed by DockView
             },
             onDidResize: () => {
                 // Handle panel resize events - resize the Phaser scene
                 if (this.gameScene) {
                     // Get the current container size
-                    const phaserContainer = element.querySelector('#phaser-viewer-container') as HTMLElement;
+                    const phaserContainer = this.getGameSceneContainer()
                     if (phaserContainer) {
                         const width = phaserContainer.clientWidth;
                         const height = phaserContainer.clientHeight;
@@ -285,23 +291,14 @@ export class GameViewerPageDockView extends GameViewerPage {
      * Create terrain stats component for DockView
      */
     private createTerrainStatsComponent() {
-        const template = document.getElementById('terrain-stats-panel-template');
-        if (!template) {
-            throw new Error('terrain-stats-panel-template not found');
-        }
-
-        const element = template.cloneNode(true) as HTMLElement;
+        const element = this.terrainStatsPanel.rootElement;
         element.style.display = 'block';
 
         return {
             element,
             init: () => {
-                // Create TerrainStatsPanel with the cloned element
-                this.terrainStatsPanel = new TerrainStatsPanel(element, this.eventBus, true);
             },
             dispose: () => {
-                // TerrainStatsPanel cleanup will be handled by LCM lifecycle
-                // Component disposal is managed by DockView
             }
         };
     }
@@ -310,23 +307,14 @@ export class GameViewerPageDockView extends GameViewerPage {
      * Create unit stats component for DockView
      */
     private createUnitStatsComponent() {
-        const template = document.getElementById('unit-stats-panel-template');
-        if (!template) {
-            throw new Error('unit-stats-panel-template not found');
-        }
-
-        const element = template.cloneNode(true) as HTMLElement;
+        const element = this.unitStatsPanel.rootElement;
         element.style.display = 'block';
 
         return {
             element,
             init: () => {
-                // Create UnitStatsPanel with the cloned element
-                this.unitStatsPanel = new UnitStatsPanel(element, this.eventBus, true);
             },
             dispose: () => {
-                // UnitStatsPanel cleanup will be handled by LCM lifecycle
-                // Component disposal is managed by DockView
             }
         };
     }
@@ -335,23 +323,14 @@ export class GameViewerPageDockView extends GameViewerPage {
      * Create turn options component for DockView
      */
     private createTurnOptionsComponent() {
-        const template = document.getElementById('turn-options-panel-template');
-        if (!template) {
-            throw new Error('turn-options-panel-template not found');
-        }
-
-        const element = template.cloneNode(true) as HTMLElement;
+        const element = this.turnOptionsPanel.rootElement;
         element.style.display = 'block';
 
         return {
             element,
             init: () => {
-                // Create TurnOptionsPanel with the cloned element
-                this.turnOptionsPanel = new TurnOptionsPanel(element, this.eventBus, true);
             },
             dispose: () => {
-                // TurnOptionsPanel cleanup will be handled by LCM lifecycle
-                // Component disposal is managed by DockView
             }
         };
     }
@@ -360,24 +339,13 @@ export class GameViewerPageDockView extends GameViewerPage {
      * Create damage distribution component for DockView
      */
     private createDamageDistributionComponent() {
-        const template = document.getElementById('damage-distribution-panel-template');
-        if (!template) {
-            throw new Error('damage-distribution-panel-template not found');
-        }
-
-        const element = template.cloneNode(true) as HTMLElement;
+        const element = this.damageDistributionPanel.rootElement;
         element.style.display = 'block';
 
         return {
             element,
-            init: () => {
-                // Create DamageDistributionPanel with the cloned element
-                this.damageDistributionPanel = new DamageDistributionPanel(element, this.eventBus, true);
-            },
-            dispose: () => {
-                // DamageDistributionPanel cleanup will be handled by LCM lifecycle
-                // Component disposal is managed by DockView
-            }
+            init: () => {},
+            dispose: () => {}
         };
     }
 
@@ -385,24 +353,15 @@ export class GameViewerPageDockView extends GameViewerPage {
      * Create game log component for DockView
      */
     private createGameLogComponent() {
-        const template = document.getElementById('game-log-panel-template');
-        if (!template) {
-            throw new Error('game-log-panel-template not found');
-        }
-
-        const element = template.cloneNode(true) as HTMLElement;
+        const element = this.gameLogPanel.element;
         element.style.display = 'block';
 
         return {
             element,
-            init: () => {
-                // Create GameLogPanel with the cloned element
-                this.gameLogPanel = new GameLogPanel(element, this.eventBus);
-            },
-            dispose: () => {
-                // GameLogPanel cleanup will be handled by LCM lifecycle
-                // Component disposal is managed by DockView
-            }
+            init: () => {},
+            dispose: () => {}
         };
     }
 }
+
+GameViewerPageDockView.loadAfterPageLoaded("gameViewerpage", GameViewerPageDockView, "GameViewerPageDockView")
