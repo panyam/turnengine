@@ -12,12 +12,11 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0
 	github.com/joho/godotenv v1.5.1
 	github.com/panyam/goutils v0.1.10
-	github.com/panyam/oneauth v0.0.12
+	github.com/panyam/oneauth v0.0.13
 	github.com/panyam/protoc-gen-go-wasmjs v0.0.25
-	github.com/panyam/templar v0.0.21
+	github.com/panyam/templar v0.0.22
 	github.com/spf13/cobra v1.10.1
 	github.com/spf13/viper v1.21.0
-	golang.org/x/crypto v0.39.0
 	golang.org/x/net v0.41.0
 	golang.org/x/oauth2 v0.30.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20251029180050-ab9386a59fda
@@ -46,6 +45,7 @@ require (
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/subosito/gotenv v1.6.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
+	golang.org/x/crypto v0.39.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.28.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251014184007-4626949a642f // indirect
@@ -53,8 +53,8 @@ require (
 
 // replace github.com/panyam/protoc-gen-go-wasmjs v0.0.25 => ../protoc-gen-go-wasmjs/
 
-replace github.com/panyam/templar v0.0.21 => ../templar
+// replace github.com/panyam/templar v0.0.22 => ../templar
 
-replace github.com/panyam/goutils v0.1.10 => ../goutils
+// replace github.com/panyam/goutils v0.1.10 => ../goutils
 
-replace github.com/panyam/oneauth v0.0.12 => ../oneauth
+// replace github.com/panyam/oneauth v0.0.13 => ../oneauth
