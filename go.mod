@@ -12,7 +12,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0
 	github.com/joho/godotenv v1.5.1
 	github.com/panyam/goutils v0.1.10
-	github.com/panyam/oneauth v0.0.13
+	github.com/panyam/oneauth v0.0.15
 	github.com/panyam/protoc-gen-go-wasmjs v0.0.25
 	github.com/panyam/templar v0.0.22
 	github.com/spf13/cobra v1.10.1
@@ -57,4 +57,4 @@ require (
 
 // replace github.com/panyam/goutils v0.1.10 => ../goutils
 
-// replace github.com/panyam/oneauth v0.0.13 => ../oneauth
+replace github.com/panyam/oneauth v0.0.15 => ../oneauth
