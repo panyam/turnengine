@@ -3,21 +3,20 @@ module github.com/panyam/turnengine
 go 1.24.0
 
 require (
+	cloud.google.com/go/datastore v1.21.0
 	connectrpc.com/connect v1.18.1
 	github.com/alexedwards/scs/v2 v2.9.0
-	github.com/antchfx/htmlquery v1.3.4
 	github.com/chzyer/readline v1.5.1
 	github.com/fatih/color v1.18.0
 	github.com/felixge/httpsnoop v1.0.4
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.22.0
 	github.com/joho/godotenv v1.5.1
 	github.com/panyam/goutils v0.1.10
-	github.com/panyam/oneauth v0.0.15
+	github.com/panyam/oneauth v0.0.14
 	github.com/panyam/protoc-gen-go-wasmjs v0.0.25
 	github.com/panyam/templar v0.0.22
 	github.com/spf13/cobra v1.10.1
 	github.com/spf13/viper v1.21.0
-	golang.org/x/net v0.43.0
 	golang.org/x/oauth2 v0.30.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20251029180050-ab9386a59fda
 	google.golang.org/grpc v1.74.2
@@ -29,14 +28,11 @@ require (
 	cloud.google.com/go/auth v0.16.4 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/compute/metadata v0.8.0 // indirect
-	cloud.google.com/go/datastore v1.21.0 // indirect
-	github.com/antchfx/xpath v1.3.3 // indirect
 	github.com/fsnotify/fsnotify v1.9.0 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-viper/mapstructure/v2 v2.4.0 // indirect
 	github.com/golang-jwt/jwt/v5 v5.2.1 // indirect
-	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.6 // indirect
 	github.com/googleapis/gax-go/v2 v2.15.0 // indirect
@@ -61,6 +57,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.36.0 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/crypto v0.41.0 // indirect
+	golang.org/x/net v0.43.0 // indirect
 	golang.org/x/sync v0.16.0 // indirect
 	golang.org/x/sys v0.35.0 // indirect
 	golang.org/x/text v0.28.0 // indirect
@@ -76,4 +73,4 @@ require (
 
 // replace github.com/panyam/goutils v0.1.10 => ../goutils
 
-replace github.com/panyam/oneauth v0.0.15 => ../oneauth
+// replace github.com/panyam/oneauth v0.0.15 => ../oneauth
